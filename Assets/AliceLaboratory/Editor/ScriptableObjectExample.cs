@@ -10,7 +10,7 @@ public class ScriptableObjectExample : ScriptableObject {
     public Material ExampleMat {
         get { return _exampleMat; }
 #if UNITY_EDITOR
-        set {}
+        set { _exampleMat = value; }
 #endif
     }
 }
