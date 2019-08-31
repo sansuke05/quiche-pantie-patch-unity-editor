@@ -4,12 +4,13 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class Communication {
-	private const string URL = "http://pantie-patch.herokuapp.com/api/convert/anna/0101.png?add_sign=true";
-
+	private const string URL = "https://s3-ap-northeast-1.amazonaws.com/samurai-blog-media/blog/wp-content/uploads/2018/09/skybox.jpg";
+		
 	FileCreator creator;
 
-	public IEnumerator GetTexture(Action callback) {
-		UnityWebRequest www = UnityWebRequestTexture.GetTexture(URL);
+	public IEnumerator GetTexture(Action<Texture2D> callback) {
+		Texture2D tex = null;
+		var www = UnityWebRequestTexture.GetTexture(URL);
 		www.timeout = 5;
 		yield return www.SendWebRequest();
 
@@ -22,11 +23,11 @@ public class Communication {
 			Debug.Log(www.error);
 		} else {
 			// テクスチャデータを保存
-			Texture tex = ((DownloadHandlerTexture)www.downloadHandler).texture;
+			tex = ((DownloadHandlerTexture)www.downloadHandler).texture;
 			creator = new FileCreator();
 			creator.Create(tex);
 		}
 
-		callback();
+		callback(tex);
 	}
 }

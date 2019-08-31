@@ -12,6 +12,7 @@
           <e p="FileCreator.cs" t="Include" />
           <e p="PantiePatchEditorWindow.cs" t="Include" />
           <e p="ScriptableObjectExample.cs" t="Include" />
+          <e p="Test.cs" t="Include" />
         </e>
       </e>
       <e p="Assets/Plugins" t="Include">
