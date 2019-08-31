@@ -25,8 +25,9 @@ public class PantiePatchEditorWindow : EditorWindow {
         Communication com = new Communication();
         _iEnumerator = com.GetTexture();
         
+        Debug.Log("Start coRoutine");
         if(_iEnumerator != null) {
-            while (_iEnumerator.MoveNext()) {}
+            while (_iEnumerator.MoveNext()) { Debug.Log("Running coRoutine..."); }
         }
     }
 }

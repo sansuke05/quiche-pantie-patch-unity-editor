@@ -9,6 +9,7 @@ public class Communication {
 
 	public IEnumerator GetTexture() {
 		UnityWebRequest www = UnityWebRequestTexture.GetTexture(URL);
+		www.timeout = 5;
 		yield return www.SendWebRequest();
 
 		// リクエストが完了するまで待機
