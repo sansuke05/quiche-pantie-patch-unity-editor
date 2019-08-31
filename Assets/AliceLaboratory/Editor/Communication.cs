@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.Networking;
 
@@ -7,7 +8,7 @@ public class Communication {
 
 	FileCreator creator;
 
-	public IEnumerator GetTexture() {
+	public IEnumerator GetTexture(Action callback) {
 		UnityWebRequest www = UnityWebRequestTexture.GetTexture(URL);
 		www.timeout = 5;
 		yield return www.SendWebRequest();
@@ -25,5 +26,7 @@ public class Communication {
 			creator = new FileCreator();
 			creator.Create(tex);
 		}
+
+		callback();
 	}
 }
