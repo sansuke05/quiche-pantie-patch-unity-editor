@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine.Networking;
 
 public class Communication {
-	private const string URL = "http://www.alcot.biz/product/cld/img/ch/anz_up.png";
+	private const string URL = "http://pantie-patch.herokuapp.com/api/convert/anna/0101.png?add_sign=true";
 
 	FileCreator creator;
 
