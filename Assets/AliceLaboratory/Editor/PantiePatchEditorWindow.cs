@@ -58,8 +58,6 @@ public class PantiePatchEditorWindow : EditorWindow {
         var com = new Communication();
         // コルーチンの作成
         _iEnumerator = com.GetTexture(FinishDownload);
-        //var test = new Test();
-        //_iEnumerator = test.DelayLog();
     }
 
     private void FinishDownload(Texture2D texture) {
