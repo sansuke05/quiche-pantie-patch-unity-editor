@@ -28,7 +28,7 @@ public class Communication {
 			// テクスチャデータを保存
 			tex = ((DownloadHandlerTexture)www.downloadHandler).texture;
 			creator = new FileCreator();
-			//creator.Create(fileName, tex);
+			creator.Create(fileName, tex);
 		}
 
 		callback(tex);
