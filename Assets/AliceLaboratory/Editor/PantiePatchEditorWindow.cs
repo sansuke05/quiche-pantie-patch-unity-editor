@@ -6,27 +6,30 @@ using UnityEditor;
 
 
 public class PantiePatchEditorWindow : EditorWindow {
-
-    private static IEnumerator _iEnumerator = null;
-
+    
     private Texture2D _tex;
+
+    private Communication _com;
 
     /// <summary>
     /// Initialization
     /// </summary>
     [MenuItem("Editor/PantiePatch")]
-    private static void Create() {
-        GetWindow<PantiePatchEditorWindow>("パンツパッチ");
+    private static void Init() {
+        var w = GetWindow<PantiePatchEditorWindow>();
+        w.titleContent = new GUIContent("パンツパッチ");
+        w.Show();
     }
     
     #region Unity Method
 
     private void OnEnable() {
-        EditorApplication.update += Update;
+        EditorApplication.update += OnUpdate;
     }
 
     private void OnDisable() {
-        EditorApplication.update -= Update;
+        EditorApplication.update -= OnUpdate;
+        EditorUtility.ClearProgressBar();
         Clear();
     }
 
@@ -36,7 +39,7 @@ public class PantiePatchEditorWindow : EditorWindow {
     private void OnGUI() {
         using(new GUILayout.VerticalScope()) {
             if(GUILayout.Button("パンツ一括ダウンロード")) {
-                Download();
+                _com = new Communication();
             }
         }
         
@@ -47,27 +50,26 @@ public class PantiePatchEditorWindow : EditorWindow {
     
     #endregion
 
-    private void Update() {
-        if (_iEnumerator != null) {
-            _iEnumerator.MoveNext();
+    void OnUpdate() {
+        if (_com != null) {
+            Download();
         }
     }
 
     private void Download() {
-        Debug.Log("Start coRoutine");
-        var com = new Communication();
-        // コルーチンの作成
-        _iEnumerator = com.GetTexture(FinishDownload);
-    }
-
-    private void FinishDownload(Texture2D texture) {
-        _tex = texture;
-        _iEnumerator = null;
+        EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _com.GetProgress());
+        var status = _com.GetTexture();
+        if (status == "finished") {
+            _com = null;
+            EditorUtility.ClearProgressBar();
+        }
     }
 
     private void Clear() {
-        if (_tex != null) {
-            DestroyImmediate(_tex);
+        if (_com != null) {
+            _com.Clear();
         }
+
+        _com = null;
     }
 }
