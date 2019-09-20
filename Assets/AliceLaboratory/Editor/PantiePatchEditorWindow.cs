@@ -11,6 +11,10 @@ public class PantiePatchEditorWindow : EditorWindow {
 
     private Communication _com;
 
+    private CommunicationOperator _operator;
+
+    private bool _processing = false;
+
     /// <summary>
     /// Initialization
     /// </summary>
@@ -40,6 +44,7 @@ public class PantiePatchEditorWindow : EditorWindow {
         using(new GUILayout.VerticalScope()) {
             if(GUILayout.Button("パンツ一括ダウンロード")) {
                 _com = new Communication();
+                _operator = new CommunicationOperator();
             }
         }
         
@@ -58,8 +63,14 @@ public class PantiePatchEditorWindow : EditorWindow {
 
     private void Download() {
         EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _com.GetProgress());
-        var status = _com.GetTexture();
-        if (status == "finished") {
+        if (!_processing) {
+            _operator.State = CommunicationState.GETTING_DREAMS_LIST;
+            _processing = true;
+        }
+        _operator.Execute(_com);
+        
+        if (_operator.State == CommunicationState.GETTING_DREAM_TEXTURES_FINISHED) {
+            _processing = false;
             _com = null;
             EditorUtility.ClearProgressBar();
         }

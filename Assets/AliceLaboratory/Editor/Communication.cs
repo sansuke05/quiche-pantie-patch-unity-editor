@@ -15,7 +15,8 @@ public class Communication {
 		www = new WWW(DREAMS_BASE_URL);
 	}
 
-	public string GetDreams() {
+	// ステート管理に変更予定
+	public Dream GetDreams() {
 		Dream dream = null;
 		
 		www.MoveNext();
@@ -25,18 +26,23 @@ public class Communication {
 			dream = JsonUtility.FromJson<Dream>(www.text);
 		}
 
+		/*
 		if (dream != null) {
+			// テクスチャデータを取得
 			foreach (var image in dream.images) {
 				www = new WWW(DREAMS_BASE_URL + image);
-				// ここの続き
+				while (true) {
+					if (GetTexture(image) == "finished") {
+						break;
+					}
+				}
 			}
-		}
-		return "";
+		}*/
+		return dream;
 	}
 
-	public string GetTexture() {
+	public string GetTexture(string fileName) {
 		Texture2D tex;
-		var fileName = "0001.png";
 
 		www.MoveNext();
 
