@@ -5,6 +5,12 @@ namespace AliceLaboratory.Editor {
 
         private CommunicationState _state = CommunicationState.NONE;
 
+        private Dream _dream;
+
+        private string _image = "";
+
+        private int _counter;
+
         public CommunicationState State {
             set { _state = value; }
             get { return _state; }
@@ -14,21 +20,28 @@ namespace AliceLaboratory.Editor {
             // 通信実装を毎フレーム呼び出し
             switch (_state) {
                 case CommunicationState.GETTING_DREAMS_LIST:
-                    Dream dream = com.GetDreams();
-                    if (dream != null) {
-                        Debug.Log(string.Join(" ", dream.images));
-                        _state = CommunicationState.GETTING_DREAM_TEXTURES_FINISHED;
+                    _dream = com.GetDreams();
+                    if (_dream != null) {
+                        _state = CommunicationState.GETTING_DREAM_TEXTURE_INIT;
                     }
                     break;
-                case CommunicationState.GETTING_DREAMS_LIST_FINISHED:
+                case CommunicationState.GETTING_DREAM_TEXTURE_INIT:
+                    _image = _dream.images[_counter];
+                    com.SetURLFromFileName(_image);
+                    _state = com.GetTexture(_image);
                     break;
-                case CommunicationState.CONVERTING_JSON_TO_OBJECT:
+                case CommunicationState.GETTING_DREAM_TEXTURE:
+                    _state = com.GetTexture(_image);
                     break;
-                case CommunicationState.CONVERTING_JSON_TO_OBJECT_FINISHED:
+                case CommunicationState.GETTING_DREAM_TEXTURE_FINISHED:
+                    _counter++;
+                    if (_counter < _dream.images.Length) {
+                        _state = CommunicationState.GETTING_DREAM_TEXTURE_INIT;
+                    } else {
+                        _state = CommunicationState.GETTING_DREAM_TEXTURES_COMPLETED;
+                    }
                     break;
-                case CommunicationState.GETTING_DREAM_TEXTURES:
-                    break;
-                case CommunicationState.GETTING_DREAM_TEXTURES_FINISHED:
+                case CommunicationState.GETTING_DREAM_TEXTURES_COMPLETED:
                     break;
             }
         }

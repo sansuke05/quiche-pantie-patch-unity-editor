@@ -15,6 +15,10 @@ public class Communication {
 		www = new WWW(DREAMS_BASE_URL);
 	}
 
+	public void SetURLFromFileName(string fileName) {
+		www = new WWW(DREAMS_BASE_URL + fileName);
+	}
+
 	// ステート管理に変更予定
 	public Dream GetDreams() {
 		Dream dream = null;
@@ -41,7 +45,7 @@ public class Communication {
 		return dream;
 	}
 
-	public string GetTexture(string fileName) {
+	public CommunicationState GetTexture(string fileName) {
 		Texture2D tex;
 
 		www.MoveNext();
@@ -53,10 +57,10 @@ public class Communication {
 			creator = new FileCreator();
 			creator.Create(fileName, tex);
 			
-			return "finished";
+			return CommunicationState.GETTING_DREAM_TEXTURE_FINISHED;
 		}
 
-		return "";
+		return CommunicationState.GETTING_DREAM_TEXTURE;
 	}
 
 	public float GetProgress() {
