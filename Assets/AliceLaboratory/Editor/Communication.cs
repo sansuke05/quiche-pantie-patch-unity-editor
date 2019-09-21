@@ -29,19 +29,7 @@ public class Communication {
 		if (www.isDone) {
 			dream = JsonUtility.FromJson<Dream>(www.text);
 		}
-
-		/*
-		if (dream != null) {
-			// テクスチャデータを取得
-			foreach (var image in dream.images) {
-				www = new WWW(DREAMS_BASE_URL + image);
-				while (true) {
-					if (GetTexture(image) == "finished") {
-						break;
-					}
-				}
-			}
-		}*/
+		
 		return dream;
 	}
 

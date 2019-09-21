@@ -13,8 +13,8 @@
           <e p="CommunicationState.cs" t="Include" />
           <e p="Dream.cs" t="Include" />
           <e p="FileCreator.cs" t="Include" />
-          <e p="PantiePatchEditorWindow.cs" t="Include" />
-          <e p="ScriptableObjectExample.cs" t="Include" />
+          <e p="PantiePatchEditorConvertWindow.cs" t="Include" />
+          <e p="PantiePatchEditorDLWindow.cs" t="Include" />
           <e p="Test.cs" t="Include" />
         </e>
       </e>
