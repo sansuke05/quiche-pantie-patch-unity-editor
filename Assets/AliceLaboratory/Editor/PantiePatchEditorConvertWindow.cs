@@ -24,7 +24,7 @@ namespace AliceLaboratory.Editor {
             {"シャーロちゃん", "shaclo"},
             {"たぬちゃん", "tanu"},
             {"右近ちゃん", "ukon"},
-            {"妖狐さん", "yuko"},
+            {"幽狐さん", "yuko"},
             {"VRoidちゃん", "vroid"},
             {"コルネットちゃん", "cornet"},
             {"コルネットちゃん(素体)", "cornet_nbody"}
