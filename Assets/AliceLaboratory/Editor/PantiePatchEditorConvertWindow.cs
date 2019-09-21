@@ -1,9 +1,12 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace AliceLaboratory.Editor {
     public class PantiePatchEditorConvertWindow : EditorWindow {
 
+        private Communication _com;
+        
         private Texture convertTexture;
 
         private static string[,] models = {
@@ -34,6 +37,9 @@ namespace AliceLaboratory.Editor {
 
         private static string[] modelNames;
 
+        /// <summary>
+        /// Initialization
+        /// </summary>
         [MenuItem("Editor/PantiePatch/パンツ変換")]
         private static void Init() {
             modelNames = new string[models.GetLength(0)];
@@ -45,7 +51,22 @@ namespace AliceLaboratory.Editor {
             window.titleContent = new GUIContent("パンツ変換");
             window.Show();
         }
+        
+        #region Unity Method
+        
+        private void OnEnable() {
+            EditorApplication.update += OnUpdate;
+        }
+        
+        private void OnDisable() {
+            EditorApplication.update -= OnUpdate;
+            EditorUtility.ClearProgressBar();
+            Clear();
+        }
 
+        /// <summary>
+        /// GUI setting
+        /// </summary>
         private void OnGUI() {
             using (new GUILayout.VerticalScope()) {
                 EditorGUILayout.LabelField("変換するパンツを選択");
@@ -58,9 +79,29 @@ namespace AliceLaboratory.Editor {
             using (new GUILayout.VerticalScope()) {
                 GUILayout.Space(20);
                 if(GUILayout.Button("変換")) {
-                    
+                    _com = new Communication();
                 }
             }
+        }
+        
+        #endregion
+
+        void OnUpdate() {
+            if (_com != null) {
+                Convert();
+            }
+        }
+
+        private void Convert() {
+            EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _com.GetProgress());
+        }
+        
+        private void Clear() {
+            if (_com != null) {
+                _com.Clear();
+            }
+
+            _com = null;
         }
     }
 }
