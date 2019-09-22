@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AliceLaboratory.Editor {
     public class PantiePatchEditorConvertWindow : EditorWindow {
 
-        private Communication _com;
+        private Gateway _gate;
         
         private Texture convertTexture;
 
@@ -78,30 +78,38 @@ namespace AliceLaboratory.Editor {
             selectedIndex = GUILayout.SelectionGrid(selectedIndex, modelNames, 2);
             using (new GUILayout.VerticalScope()) {
                 GUILayout.Space(20);
+                bool isDisable = convertTexture == null || selectedIndex < 0;
+                EditorGUI.BeginDisabledGroup(isDisable);
                 if(GUILayout.Button("変換")) {
-                    _com = new Communication();
+                    _gate = new Gateway(convertTexture.name + ".png", models[selectedIndex, 1]);
                 }
+                EditorGUI.EndDisabledGroup();
             }
         }
         
         #endregion
 
         void OnUpdate() {
-            if (_com != null) {
+            if (_gate != null) {
                 Convert();
             }
         }
 
         private void Convert() {
-            EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _com.GetProgress());
+            EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _gate.GetProgress());
+            if (_gate.GetConvertedTexture(convertTexture.name + ".png", models[selectedIndex, 1]) == GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED) {
+                _gate = null;
+                EditorUtility.ClearProgressBar();
+                Debug.Log("Converting completed!");
+            }
         }
         
         private void Clear() {
-            if (_com != null) {
-                _com.Clear();
+            if (_gate != null) {
+                _gate.Clear();
             }
 
-            _com = null;
+            _gate = null;
         }
     }
 }

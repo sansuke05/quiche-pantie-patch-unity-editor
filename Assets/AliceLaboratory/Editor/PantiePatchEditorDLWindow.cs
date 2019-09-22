@@ -4,9 +4,9 @@ using UnityEngine;
 namespace AliceLaboratory.Editor {
     public class PantiePatchEditorDLWindow : EditorWindow {
     
-        private Communication _com;
+        private Gateway _gate;
 
-        private CommunicationOperator _operator;
+        private GatewayOperator _operator;
 
         private bool _processing;
 
@@ -38,8 +38,8 @@ namespace AliceLaboratory.Editor {
         private void OnGUI() {
             using(new GUILayout.VerticalScope()) {
                 if(GUILayout.Button("パンツ一括ダウンロード")) {
-                    _com = new Communication();
-                    _operator = new CommunicationOperator();
+                    _gate = new Gateway();
+                    _operator = new GatewayOperator();
                 }
             }
         }
@@ -47,33 +47,33 @@ namespace AliceLaboratory.Editor {
         #endregion
 
         void OnUpdate() {
-            if (_com != null) {
+            if (_gate != null) {
                 Download();
             }
         }
 
         private void Download() {
-            EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _com.GetProgress());
+            EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _gate.GetProgress());
             if (!_processing) {
-                _operator.State = CommunicationState.GETTING_DREAMS_LIST;
+                _operator.State = GatewayState.GETTING_DREAMS_LIST;
                 _processing = true;
             }
-            _operator.Execute(_com);
+            _operator.Execute(_gate);
         
-            if (_operator.State == CommunicationState.GETTING_DREAM_TEXTURES_COMPLETED) {
+            if (_operator.State == GatewayState.GETTING_DREAM_TEXTURES_COMPLETED) {
                 _processing = false;
-                _com = null;
+                _gate = null;
                 EditorUtility.ClearProgressBar();
                 Debug.Log("Downloading completed!");
             }
         }
 
         private void Clear() {
-            if (_com != null) {
-                _com.Clear();
+            if (_gate != null) {
+                _gate.Clear();
             }
 
-            _com = null;
+            _gate = null;
         }
     }
 }

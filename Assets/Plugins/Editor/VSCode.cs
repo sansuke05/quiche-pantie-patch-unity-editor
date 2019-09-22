@@ -9,14 +9,15 @@
  * Authors:
  *   Matthew Davey <matthew.davey@dotbunny.com>
  */
-namespace dotBunny.Unity
-{
-    using System;
-    using System.IO;
-    using System.Text.RegularExpressions;
-    using UnityEditor;
-    using UnityEngine;
 
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEngine;
+
+namespace Plugins.Editor
+{
     [InitializeOnLoad]
     public static class VSCode
     {

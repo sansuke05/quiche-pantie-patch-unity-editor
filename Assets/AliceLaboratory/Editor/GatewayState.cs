@@ -1,0 +1,12 @@
+namespace AliceLaboratory.Editor {
+    public enum GatewayState {
+        NONE,
+        GETTING_DREAMS_LIST,
+        GETTING_DREAM_TEXTURE_INIT,
+        GETTING_DREAM_TEXTURE,
+        GETTING_DREAM_TEXTURE_FINISHED,
+        GETTING_DREAM_TEXTURES_COMPLETED,
+        GETTING_CONVERTED_TEXTURE,
+        GETTING_CONVERTED_TEXTURE_COMPLETED
+    }
+}
