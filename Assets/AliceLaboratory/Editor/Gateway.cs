@@ -60,9 +60,10 @@ namespace AliceLaboratory.Editor {
 			// リクエストが完了した時の処理
 			if (www.isDone) {
 				tex = www.texture;
+				var dir = "ConvertedDreams/" + modelName;
 				// テクスチャデータの保存
 				creator = new FileCreator();
-				creator.Create(fileName, modelName, tex);
+				creator.Create(fileName, dir, tex);
 			
 				return GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED;
 			}
