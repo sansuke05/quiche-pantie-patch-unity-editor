@@ -13,10 +13,10 @@ namespace AliceLaboratory.Editor {
         /// <summary>
         /// Initialization
         /// </summary>
-        [MenuItem("Editor/PantiePatch/パンツデータ一括ダウンロード")]
+        [MenuItem("Editor/PantiePatch/パンツデータダウンロード")]
         private static void Init() {
             var w = GetWindow<PantiePatchEditorDLWindow>();
-            w.titleContent = new GUIContent("パンツパッチ");
+            w.titleContent = new GUIContent("PantieDL");
             w.Show();
         }
     
@@ -37,7 +37,7 @@ namespace AliceLaboratory.Editor {
         /// </summary>
         private void OnGUI() {
             using(new GUILayout.VerticalScope()) {
-                if(GUILayout.Button("パンツ一括ダウンロード")) {
+                if(GUILayout.Button("パンツデータダウンロード")) {
                     _gate = new Gateway();
                     _operator = new GatewayOperator();
                 }
