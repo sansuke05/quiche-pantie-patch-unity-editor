@@ -10,6 +10,8 @@ namespace AliceLaboratory.Editor {
 
         private bool _processing;
 
+        private bool _disable = false;
+
         /// <summary>
         /// Initialization
         /// </summary>
@@ -37,10 +39,13 @@ namespace AliceLaboratory.Editor {
         /// </summary>
         private void OnGUI() {
             using(new GUILayout.VerticalScope()) {
+                EditorGUI.BeginDisabledGroup(_disable);
                 if(GUILayout.Button("パンツデータダウンロード")) {
                     _gate = new Gateway();
                     _operator = new GatewayOperator();
+                    _disable = true;
                 }
+                EditorGUI.EndDisabledGroup();
             }
         }
     
@@ -63,6 +68,7 @@ namespace AliceLaboratory.Editor {
             if (_operator.State == GatewayState.GETTING_DREAM_TEXTURES_COMPLETED) {
                 _processing = false;
                 _gate = null;
+                _disable = false;
                 EditorUtility.ClearProgressBar();
                 Debug.Log("Downloading completed!");
             }
@@ -73,6 +79,7 @@ namespace AliceLaboratory.Editor {
                 _gate.Clear();
             }
 
+            _disable = false;
             _gate = null;
         }
     }
