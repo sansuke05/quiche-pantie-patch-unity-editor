@@ -9,6 +9,10 @@ namespace AliceLaboratory.Editor {
         
         private Texture convertTexture;
 
+        private bool[] _disable = {false, true};
+
+        private int _disableMode = 0;
+
         private static string[,] models = {
             {"吸血鬼アンナ", "anna"},
             {"吸血鬼アンナちゃん(ライト)", "anna_light"},
@@ -81,10 +85,11 @@ namespace AliceLaboratory.Editor {
             selectedIndex = GUILayout.SelectionGrid(selectedIndex, modelNames, 2);
             using (new GUILayout.VerticalScope()) {
                 GUILayout.Space(20);
-                bool isDisable = convertTexture == null || selectedIndex < 0;
-                EditorGUI.BeginDisabledGroup(isDisable);
+                _disable[0] = convertTexture == null || selectedIndex < 0;
+                EditorGUI.BeginDisabledGroup(_disable[_disableMode]);
                 if(GUILayout.Button("変換")) {
                     _gate = new Gateway(convertTexture.name + ".png", models[selectedIndex, 1]);
+                    _disableMode = 1;
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -102,6 +107,7 @@ namespace AliceLaboratory.Editor {
             EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _gate.GetProgress());
             if (_gate.GetConvertedTexture(convertTexture.name + ".png", models[selectedIndex, 1]) == GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED) {
                 _gate = null;
+                _disableMode = 0;
                 EditorUtility.ClearProgressBar();
                 Debug.Log("Converting completed!");
             }
@@ -112,6 +118,7 @@ namespace AliceLaboratory.Editor {
                 _gate.Clear();
             }
 
+            _disableMode = 0;
             _gate = null;
         }
     }
