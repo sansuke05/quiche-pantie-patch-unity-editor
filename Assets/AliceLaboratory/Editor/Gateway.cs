@@ -2,9 +2,12 @@
 
 namespace AliceLaboratory.Editor {
 	public class Gateway {
-		private const string DREAMS_BASE_URL = "http://pantie-patch.herokuapp.com/api/dream/";
-		private const string CONVERTING_BASE_URL = "http://pantie-patch.herokuapp.com/api/convert/";
-
+		//old URL
+		//private const string DREAMS_BASE_URL = "http://pantie-patch.herokuapp.com/api/dream/";
+		//private const string CONVERTING_BASE_URL = "http://pantie-patch.herokuapp.com/api/convert/";
+		private const string DREAMS_BASE_URL = "https://labten.net/pantie-patch/api/dream/";
+		private const string CONVERTING_BASE_URL = "https://labten.net/pantie-patch/api/convert/";
+		
 		private WWW www;
 	
 		FileCreator creator;
