@@ -9,13 +9,12 @@
       <e p="Assets/AliceLaboratory" t="Include">
         <e p="Editor" t="Include">
           <e p="Dream.cs" t="Include" />
-          <e p="FileCreator.cs" t="Include" />
+          <e p="FilerOperator.cs" t="Include" />
           <e p="Gateway.cs" t="Include" />
           <e p="GatewayOperator.cs" t="Include" />
           <e p="GatewayState.cs" t="Include" />
           <e p="PantiePatchEditorConvertWindow.cs" t="Include" />
           <e p="PantiePatchEditorDLWindow.cs" t="Include" />
-          <e p="Test.cs" t="Include" />
         </e>
       </e>
       <e p="Assets/Plugins" t="Include">
