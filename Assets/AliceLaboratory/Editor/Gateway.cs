@@ -10,7 +10,7 @@ namespace AliceLaboratory.Editor {
 		
 		private WWW www;
 	
-		FileCreator creator;
+		FilerOperator creator;
 
 		public Gateway() {
 			www = new WWW(DREAMS_BASE_URL);
@@ -46,7 +46,7 @@ namespace AliceLaboratory.Editor {
 			if (www.isDone) {
 				tex = www.texture;
 				// テクスチャデータの保存
-				creator = new FileCreator();
+				creator = new FilerOperator();
 				creator.Create(fileName, "Dreams", tex);
 			
 				return GatewayState.GETTING_DREAM_TEXTURE_FINISHED;
@@ -65,7 +65,7 @@ namespace AliceLaboratory.Editor {
 				tex = www.texture;
 				var dir = "ConvertedDreams/" + modelName;
 				// テクスチャデータの保存
-				creator = new FileCreator();
+				creator = new FilerOperator();
 				creator.Create(fileName, dir, tex);
 			
 				return GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED;
