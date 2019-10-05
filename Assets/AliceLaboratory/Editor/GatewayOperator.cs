@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace AliceLaboratory.Editor {
     public class GatewayOperator {
@@ -6,6 +7,8 @@ namespace AliceLaboratory.Editor {
         private GatewayState _state = GatewayState.NONE;
 
         private Dream _dream;
+
+        private List<string> _existsFiles = new List<string>();
 
         private string _image = "";
 
@@ -20,19 +23,28 @@ namespace AliceLaboratory.Editor {
             // 通信実装を毎フレーム呼び出し
             switch (_state) {
                 case GatewayState.GETTING_DREAMS_LIST:
+                    _existsFiles = FilerOperator.getExistsTextures();
                     _dream = gateway.GetDreams();
                     if (_dream != null) {
                         _state = GatewayState.GETTING_DREAM_TEXTURE_INIT;
                     }
                     break;
+
                 case GatewayState.GETTING_DREAM_TEXTURE_INIT:
                     _image = _dream.images[_counter];
+                    // 既にローカルにテクスチャが存在する場合はスキップ
+                    if (_existsFiles != null && _existsFiles.Contains(_image)) {
+                        _state = GatewayState.GETTING_DREAM_TEXTURE_FINISHED;
+                        break;
+                    }
                     gateway.SetUrlFromFileName(_image);
                     _state = gateway.GetTexture(_image);
                     break;
+
                 case GatewayState.GETTING_DREAM_TEXTURE:
                     _state = gateway.GetTexture(_image);
                     break;
+
                 case GatewayState.GETTING_DREAM_TEXTURE_FINISHED:
                     _counter++;
                     if (_counter < _dream.images.Length) {
@@ -41,6 +53,7 @@ namespace AliceLaboratory.Editor {
                         _state = GatewayState.GETTING_DREAM_TEXTURES_COMPLETED;
                     }
                     break;
+
                 case GatewayState.GETTING_DREAM_TEXTURES_COMPLETED:
                     break;
             }

@@ -27,7 +27,7 @@ namespace AliceLaboratory.Editor {
         }
 
 
-        public List<string> getExistsTextures(string parentDir = "Dreams") {
+        public static List<string> getExistsTextures(string parentDir = "Dreams") {
             string[] filePathArray;
             var fileNames = new List<string>();
 
