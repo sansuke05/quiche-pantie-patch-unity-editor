@@ -8,6 +8,8 @@ namespace AliceLaboratory.Editor {
 
         private GatewayOperator _operator;
 
+        private GUIFlagState _state = GUIFlagState.NONE;
+
         private bool _processing;
 
         private bool _disable = false;
@@ -15,10 +17,10 @@ namespace AliceLaboratory.Editor {
         /// <summary>
         /// Initialization
         /// </summary>
-        [MenuItem("Editor/PantiePatch/パンツデータダウンロード")]
+        [MenuItem("Editor/PantiePatch/データダウンロード")]
         private static void Init() {
             var w = GetWindow<PantiePatchEditorDLWindow>();
-            w.titleContent = new GUIContent("PantieDL");
+            w.titleContent = new GUIContent("Download");
             w.Show();
         }
     
@@ -39,11 +41,23 @@ namespace AliceLaboratory.Editor {
         /// </summary>
         private void OnGUI() {
             using(new GUILayout.VerticalScope()) {
+                EditorGUILayout.LabelField("変換元パンツテクスチャダウンロード");
                 EditorGUI.BeginDisabledGroup(_disable);
-                if(GUILayout.Button("パンツデータダウンロード")) {
+                if(GUILayout.Button("ダウンロード")) {
                     _gate = new Gateway();
                     _operator = new GatewayOperator();
+                    _state = GUIFlagState.DOWNLOADING_DREAMS;
                     _disable = true;
+                }
+                EditorGUI.EndDisabledGroup();
+            }
+            EditorGUILayout.Space();
+
+            using(new GUILayout.VerticalScope()) {
+                EditorGUILayout.LabelField("対応アバター情報の更新");
+                EditorGUI.BeginDisabledGroup(_disable);
+                if (GUILayout.Button("更新")) {
+
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -52,8 +66,14 @@ namespace AliceLaboratory.Editor {
         #endregion
 
         void OnUpdate() {
-            if (_gate != null) {
+            if (_gate == null) {
+                return;
+            }
+
+            if (_state == GUIFlagState.DOWNLOADING_DREAMS) {
                 Download();
+            } else if(_state == GUIFlagState.UPDATING_AVATERS_DATA) {
+                UpdateAvaters();
             }
         }
 
@@ -68,10 +88,17 @@ namespace AliceLaboratory.Editor {
             if (_operator.State == GatewayState.GETTING_DREAM_TEXTURES_COMPLETED) {
                 _processing = false;
                 _gate = null;
+                _state = GUIFlagState.NONE;
                 _disable = false;
                 EditorUtility.ClearProgressBar();
                 Debug.Log("Downloading completed!");
             }
+        }
+
+        private void UpdateAvaters() {
+            EditorUtility.DisplayProgressBar("Updating...", "Updating avaters data", _gate.GetProgress());
+            // ここから
+
         }
 
         private void Clear() {
