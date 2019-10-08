@@ -16,6 +16,10 @@ namespace AliceLaboratory.Editor {
 			www = new WWW(DREAMS_BASE_URL);
 		}
 
+		public Gateway(string option) {
+			www = new WWW(CONVERTING_BASE_URL);
+		}
+
 		public Gateway(string fileName, string modelName) {
 			www = new WWW(CONVERTING_BASE_URL + modelName + "/" + fileName);
 		}
@@ -35,6 +39,18 @@ namespace AliceLaboratory.Editor {
 			}
 		
 			return dream;
+		}
+
+		public AvatarsData GetAvatarsData() {
+			AvatarsData AvatarsData = null;
+
+			www.MoveNext();
+
+			if (www.isDone) {
+				AvatarsData = JsonUtility.FromJson<AvatarsData>(www.text);
+			}
+
+			return AvatarsData;
 		}
 
 		public GatewayState GetTexture(string fileName) {

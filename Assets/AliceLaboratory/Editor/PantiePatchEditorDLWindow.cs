@@ -57,7 +57,9 @@ namespace AliceLaboratory.Editor {
                 EditorGUILayout.LabelField("対応アバター情報の更新");
                 EditorGUI.BeginDisabledGroup(_disable);
                 if (GUILayout.Button("更新")) {
-
+                    _gate = new Gateway("GetAvatarsData");
+                    _state = GUIFlagState.UPDATING_AVATERS_DATA;
+                    _disable = true;
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -97,8 +99,19 @@ namespace AliceLaboratory.Editor {
 
         private void UpdateAvaters() {
             EditorUtility.DisplayProgressBar("Updating...", "Updating avaters data", _gate.GetProgress());
-            // ここから
+            var data = _gate.GetAvatarsData();
+            if(data != null) {
+                var file = new FilerOperator();
+                file.SaveAvatarsData(data);
 
+                _gate = null;
+                _state = GUIFlagState.NONE;
+                _disable = false;
+                EditorUtility.ClearProgressBar();
+                Debug.Log("Updating completed!");
+                Debug.Log(string.Join(",",data.display_names));
+                Debug.Log(string.Join(",",data.models));
+            }
         }
 
         private void Clear() {

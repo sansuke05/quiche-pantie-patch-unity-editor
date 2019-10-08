@@ -45,5 +45,10 @@ namespace AliceLaboratory.Editor {
             
             return fileNames;
         }
+
+        public void SaveAvatarsData(AvatarsData data) {
+            //Scriptable objectとして保存
+            //ここから
+        }
     }
 }
