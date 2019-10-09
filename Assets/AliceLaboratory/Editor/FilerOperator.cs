@@ -46,9 +46,26 @@ namespace AliceLaboratory.Editor {
             return fileNames;
         }
 
+        //Scriptable objectとして保存
         public void SaveAvatarsData(AvatarsData data) {
-            //Scriptable objectとして保存
-            //ここから
+            var objPath = ASSET_DIR_PATH + "ScriptableObjects/AvatersDataObject.asset";
+            var obj = ScriptableObject.CreateInstance<AvatarsDataObject>();
+
+            obj.DisplayNames = data.display_names;
+            obj.Models = data.models;
+
+            // 新規の場合は作成
+            if (!AssetDatabase.Contains(obj as UnityEngine.Object)) {
+                string dir = Path.GetDirectoryName(objPath);
+                if(!Directory.Exists(dir)) {
+                    Directory.CreateDirectory(dir);
+                }
+                AssetDatabase.CreateAsset(obj, objPath);
+            }
+            obj.hideFlags = HideFlags.NotEditable;
+            EditorUtility.SetDirty(obj);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 }

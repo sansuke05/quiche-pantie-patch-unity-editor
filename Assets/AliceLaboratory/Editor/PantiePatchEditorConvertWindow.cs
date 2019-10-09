@@ -49,6 +49,7 @@ namespace AliceLaboratory.Editor {
         /// </summary>
         [MenuItem("Editor/PantiePatch/パンツ変換")]
         private static void Init() {
+            // ToDo: ScriptableObjectからアバターデータを読み込む処理を追加
             modelNames = new string[models.GetLength(0)];
             for (int i = 0; i < models.GetLength(0); i++) {
                 modelNames[i] = models[i, 0];
