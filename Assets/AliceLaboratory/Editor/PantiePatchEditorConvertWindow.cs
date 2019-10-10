@@ -13,47 +13,18 @@ namespace AliceLaboratory.Editor {
 
         private int _disableMode = 0;
 
-        private static string[,] models = {
-            {"吸血鬼アンナ", "anna"},
-            {"吸血鬼アンナちゃん(ライト)", "anna_light"},
-            {"コルネット", "cornet"},
-            {"コルネット(素体)", "cornet_nbody"},
-            {"Differe","differe"},
-            {"フィリナ","firina"},
-            {"ファジー", "fuzzy"},
-            {"リンツ", "linz"},
-            {"リンツ(素体)", "linz_nbody"},
-            {"ルア", "lua"},
-            {"ルア(クエスト)", "lua_quest"},
-            {"ミルク", "milk"},
-            {"ミーシェ", "mishe"},
-            {"ノイ","noy"},
-            {"キッシュ", "quiche"},
-            {"キッシュ(ブラ)", "quiche_bra"},
-            {"キッシュ(ライト)", "quiche_light"},
-            {"キッシュ(素体)", "quiche_nbody"},
-            {"ラムネ", "ramne"},
-            {"シャーロ", "shaclo"},
-            {"たぬ", "tanu"},
-            {"右近", "ukon"},
-            {"VRoid", "vroid"},
-            {"幽狐", "yuko"}
-        };
+        private static AvatarsData _avatersData;
 
         private int selectedIndex = -1;
-
-        private static string[] modelNames;
 
         /// <summary>
         /// Initialization
         /// </summary>
         [MenuItem("Editor/PantiePatch/パンツ変換")]
         private static void Init() {
-            // ToDo: ScriptableObjectからアバターデータを読み込む処理を追加
-            modelNames = new string[models.GetLength(0)];
-            for (int i = 0; i < models.GetLength(0); i++) {
-                modelNames[i] = models[i, 0];
-            }
+            // ScriptableObjectからアバターデータを読み込む
+            var file = new FilerOperator();
+            _avatersData = file.readAvatersData();
             
             var window = GetWindow<PantiePatchEditorConvertWindow>();
             window.titleContent = new GUIContent("パンツ変換");
@@ -83,13 +54,20 @@ namespace AliceLaboratory.Editor {
                 
                 EditorGUILayout.LabelField("変換対象のアバター");
             }
-            selectedIndex = GUILayout.SelectionGrid(selectedIndex, modelNames, 2);
+            if (_avatersData != null) {
+                selectedIndex = GUILayout.SelectionGrid(selectedIndex, _avatersData.display_names, 2);
+            } else {
+                EditorGUILayout.HelpBox(
+                    "アバターのデータがダウンロードされていません\nメニューのデータダウンロード > 対応アバター情報の更新からデータのダウンロードをして下さい",
+                    MessageType.Info
+                );
+            }
             using (new GUILayout.VerticalScope()) {
                 GUILayout.Space(20);
                 _disable[0] = convertTexture == null || selectedIndex < 0;
                 EditorGUI.BeginDisabledGroup(_disable[_disableMode]);
                 if(GUILayout.Button("変換")) {
-                    _gate = new Gateway(convertTexture.name + ".png", models[selectedIndex, 1]);
+                    _gate = new Gateway(convertTexture.name + ".png", _avatersData.models[selectedIndex]);
                     _disableMode = 1;
                 }
                 EditorGUI.EndDisabledGroup();
@@ -106,7 +84,7 @@ namespace AliceLaboratory.Editor {
 
         private void Convert() {
             EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _gate.GetProgress());
-            if (_gate.GetConvertedTexture(convertTexture.name + ".png", models[selectedIndex, 1]) == GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED) {
+            if (_gate.GetConvertedTexture(convertTexture.name + ".png", _avatersData.models[selectedIndex]) == GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED) {
                 _gate = null;
                 _disableMode = 0;
                 EditorUtility.ClearProgressBar();

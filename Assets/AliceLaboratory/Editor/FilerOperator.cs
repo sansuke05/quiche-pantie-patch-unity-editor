@@ -9,6 +9,7 @@ namespace AliceLaboratory.Editor {
     public class FilerOperator {
 
         private const string ASSET_DIR_PATH = "Assets/AliceLaboratory/";
+        private const string OBJ_PATH = ASSET_DIR_PATH + "ScriptableObjects/AvatersDataObject.asset";
         //private const string CONVERTED_TEX_DIR_PATH = "Assets/ExampleAssets/sample.png";
 
         public void Create(string fileName, string parentDir, Texture2D _texture) {
@@ -48,7 +49,6 @@ namespace AliceLaboratory.Editor {
 
         //Scriptable objectとして保存
         public void SaveAvatarsData(AvatarsData data) {
-            var objPath = ASSET_DIR_PATH + "ScriptableObjects/AvatersDataObject.asset";
             var obj = ScriptableObject.CreateInstance<AvatarsDataObject>();
 
             obj.DisplayNames = data.display_names;
@@ -56,16 +56,29 @@ namespace AliceLaboratory.Editor {
 
             // 新規の場合は作成
             if (!AssetDatabase.Contains(obj as UnityEngine.Object)) {
-                string dir = Path.GetDirectoryName(objPath);
+                string dir = Path.GetDirectoryName(OBJ_PATH);
                 if(!Directory.Exists(dir)) {
                     Directory.CreateDirectory(dir);
                 }
-                AssetDatabase.CreateAsset(obj, objPath);
+                AssetDatabase.CreateAsset(obj, OBJ_PATH);
             }
             obj.hideFlags = HideFlags.NotEditable;
             EditorUtility.SetDirty(obj);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
+
+        public AvatarsData readAvatersData() {
+            var data = new AvatarsData();
+            var obj = AssetDatabase.LoadAssetAtPath<AvatarsDataObject>(OBJ_PATH);
+
+            if (obj != null) {
+                data.display_names = obj.DisplayNames;
+                data.models = obj.Models;
+
+                return data;
+            }
+            return null;
         }
     }
 }
