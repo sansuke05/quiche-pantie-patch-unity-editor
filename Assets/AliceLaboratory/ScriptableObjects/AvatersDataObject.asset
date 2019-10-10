@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 8
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93e21f66d9b644987a5dae957ae265a0, type: 3}
+  m_Name: AvatersDataObject
+  m_EditorClassIdentifier: 
+  _displayNames:
+  - "\u5438\u8840\u9B3C\u30A2\u30F3\u30CA"
+  - "\u5438\u8840\u9B3C\u30A2\u30F3\u30CA(\u30E9\u30A4\u30C8)"
+  - "\u30D6\u30E9\u30F3\u30AB"
+  - "\u30B3\u30EB\u30CD\u30C3\u30C8"
+  - "\u30B3\u30EB\u30CD\u30C3\u30C8(\u7D20\u4F53)"
+  - Differe
+  - "\u30D5\u30A3\u30EA\u30CA"
+  - "\u30D5\u30A1\u30B8\u30FC"
+  - I-s
+  - "\u30EA\u30F3\u30C4"
+  - "\u30EA\u30F3\u30C4(\u7D20\u4F53)"
+  - "\u30EB\u30A2"
+  - "\u30EB\u30A2(\u30AF\u30A8\u30B9\u30C8)"
+  - "\u30DF\u30EB\u30AF"
+  - "\u30DF\u30FC\u30B7\u30A7"
+  - "\u30CE\u30A4"
+  - "\u30AD\u30C3\u30B7\u30E5"
+  - "\u30AD\u30C3\u30B7\u30E5(\u30D6\u30E9)"
+  - "\u30AD\u30C3\u30B7\u30E5(\u30E9\u30A4\u30C8)"
+  - "\u30AD\u30C3\u30B7\u30E5(\u7D20\u4F53)"
+  - "\u30E9\u30E0\u30CD"
+  - "\u30B7\u30E3\u30FC\u30ED"
+  - "\u30B7\u30E3\u30FC\u30ED(\u51AC\u670D)"
+  - "\u305F\u306C"
+  - "\u53F3\u8FD1"
+  - VRoid
+  - "\u5E7D\u72D0"
+  _models:
+  - anna
+  - anna_light
+  - blanca
+  - cornet
+  - cornet_nbody
+  - differe
+  - firina
+  - fuzzy
+  - i-s
+  - linz
+  - linz_nbody
+  - lua
+  - lua_quest
+  - milk
+  - mishe
+  - noy
+  - quiche
+  - quiche_bra
+  - quiche_light
+  - quiche_nbody
+  - ramne
+  - shaclo
+  - shaclo_winter
+  - tanu
+  - ukon
+  - vroid
+  - yuko
