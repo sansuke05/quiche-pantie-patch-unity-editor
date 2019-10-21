@@ -97,7 +97,8 @@ namespace AliceLaboratory.Editor {
 
         private void Convert() {
             EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _gate.GetProgress());
-            if (_gate.GetConvertedTexture(convertTexture.name + ".png", _avatersData.models[selectedIndex]) == GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED) {
+            var state = _gate.GetConvertedTexture(convertTexture.name + ".png", _avatersData.models[selectedIndex], baseAvaterTexture);
+            if (state == GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED) {
                 _gate = null;
                 _disableMode = 0;
                 EditorUtility.ClearProgressBar();
