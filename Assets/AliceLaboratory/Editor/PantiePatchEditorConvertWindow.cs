@@ -9,6 +9,11 @@ namespace AliceLaboratory.Editor {
         
         private Texture convertTexture;
 
+        private Texture baseAvaterTexture;
+        
+        //スクロール位置
+        private Vector2 _scrollPosition = Vector2.zero;
+
         private bool[] _disable = {false, true};
 
         private int _disableMode = 0;
@@ -48,14 +53,22 @@ namespace AliceLaboratory.Editor {
         /// </summary>
         private void OnGUI() {
             using (new GUILayout.VerticalScope()) {
-                EditorGUILayout.LabelField("変換するパンツを選択");
-                var option = new []{GUILayout.Width (64), GUILayout.Height (64)};
-                convertTexture = EditorGUILayout.ObjectField(convertTexture, typeof(Texture), false, option) as Texture;
-                
+                using (new GUILayout.HorizontalScope()) {
+                    EditorGUILayout.LabelField("変換するパンツを選択");
+                    var option = new []{GUILayout.Width (64), GUILayout.Height (64)};
+                    convertTexture = EditorGUILayout.ObjectField(convertTexture, typeof(Texture), false, option) as Texture;
+                }
+                using (new GUILayout.HorizontalScope()) {
+                    EditorGUILayout.LabelField("重ねるアバターのテクスチャを選択");
+                    var option = new []{GUILayout.Width (64), GUILayout.Height (64)};
+                    baseAvaterTexture = EditorGUILayout.ObjectField(baseAvaterTexture, typeof(Texture), false, option) as Texture;
+                }
                 EditorGUILayout.LabelField("変換対象のアバター");
             }
             if (_avatersData != null) {
+                _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
                 selectedIndex = GUILayout.SelectionGrid(selectedIndex, _avatersData.display_names, 2);
+                EditorGUILayout.EndScrollView();
             } else {
                 EditorGUILayout.HelpBox(
                     "アバターのデータがダウンロードされていません\nメニューのデータダウンロード > 対応アバター情報の更新からデータのダウンロードをして下さい",
