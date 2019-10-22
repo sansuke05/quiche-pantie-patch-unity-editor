@@ -2,9 +2,45 @@ using UnityEngine;
 
 namespace AliceLaboratory.Editor {
     public class Utilities {
+
+        /// <summary>
+        /// テクスチャの重ね合わせ処理
+        /// </summary>
         public static Texture2D Overlap(Texture2D overTex, Texture2D baseTex) {
-            //TODO: テクスチャの合成処理をここに追加
-            return overTex;
+            var output = new Texture2D(baseTex.width, baseTex.height);
+            var dest = output.GetPixels();
+            var renderTexture = RenderTexture.GetTemporary(baseTex.width, baseTex.height);
+
+            Graphics.Blit(baseTex, renderTexture);
+            dest = GetPixelsFromRT(renderTexture);
+            Graphics.Blit(overTex, renderTexture);
+            var pixels = GetPixelsFromRT(renderTexture);
+            for (int i = 0; i < pixels.Length; i++) {
+                // RTのアルファ値が1ならば上書き
+                if(pixels[i].a == 1) {
+                    dest[i] = pixels[i];
+                }
+            }
+            RenderTexture.ReleaseTemporary(renderTexture);
+            output.SetPixels(dest);
+            output.Apply();
+            return baseTex;
+        }
+
+        /// <summary>
+        /// RenderTextureからピクセル情報を取得する
+        /// </summary>
+        private static Color[] GetPixelsFromRT(RenderTexture target) {
+            var preRT = RenderTexture.active;
+            RenderTexture.active = target;
+
+            // ReadPixels()でレンダーターゲットからテクスチャ情報を生成する
+            var texture = new Texture2D(target.width, target.height);
+            texture.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0);
+            texture.Apply();
+
+            RenderTexture.active = preRT;
+            return texture.GetPixels();
         }
 
         public static Texture2D ToTexture2D(Texture tex) {
