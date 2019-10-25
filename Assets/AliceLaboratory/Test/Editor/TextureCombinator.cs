@@ -80,21 +80,4 @@ public class TextureCombinator : EditorWindow {
         System.IO.File.WriteAllBytes(filePath, bytes);
         AssetDatabase.Refresh();
     }
-
-    /// <summary>
-    /// RenderTextureからピクセル情報を取得する
-    /// </summary>
-    private Color[] GetPixelsFromRT(RenderTexture target)
-    {
-        var preRT = RenderTexture.active;
-        RenderTexture.active = target;
-        
-        // ReadPixels()でレンダーターゲットからテクスチャ情報を生成する
-        var texture = new Texture2D(target.width, target.height);
-        texture.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0);
-        texture.Apply();
-        
-        RenderTexture.active = preRT;
-        return texture.GetPixels();
-    }
 }
