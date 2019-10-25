@@ -7,27 +7,36 @@ namespace AliceLaboratory.Editor {
         /// テクスチャの重ね合わせ処理
         /// </summary>
         public static Texture2D Overlap(Texture2D overTex, Texture2D baseTex) {
-            var output = new Texture2D(baseTex.width, baseTex.height);
-            var dest = output.GetPixels();
+            // サイズ調整用のRenderTextureを用意
             var renderTexture = RenderTexture.GetTemporary(baseTex.width, baseTex.height);
             
             Graphics.Blit(baseTex, renderTexture);
-            dest = GetPixelsFromRT(renderTexture);
+            var basePixels = GetPixelsFromRT(renderTexture);
+            
             Graphics.Blit(overTex, renderTexture);
-            var pixels = GetPixelsFromRT(renderTexture);
-            for (int i = 0; i < pixels.Length; i++) {
-                // RTのアルファ値が1ならば上書き
-                if(pixels[i].a == 1) {
-                    dest[i].r = pixels[i].r;
-                    dest[i].g = pixels[i].g;
-                    dest[i].b = pixels[i].b;
-                    dest[i].a = pixels[i].a;
+            var overPixels = GetPixelsFromRT(renderTexture);
+
+            // outputピクセルを作って最終的な色を書き込んでいく
+            var outputPixels = new Color[basePixels.Length];
+            
+            for (int i = 0; i < basePixels.Length; ++i) {
+                var d = basePixels[i];
+                var f = overPixels[i];
+                var a = f.a + d.a * (1f - f.a);
+                if(a > 0f) {
+                    var r = (f.r * f.a + d.r * d.a * (1f - f.a)) / a;
+                    var g = (f.g * f.a + d.g * d.a * (1f - f.a)) / a;
+                    var b = (f.b * f.a + d.b * d.a * (1f - f.a)) / a;
+                    outputPixels[i] = new Color(r, g, b, a);
+                } else {
+                    outputPixels[i] = new Color(0f, 0f, 0f, a);
                 }
             }
             RenderTexture.ReleaseTemporary(renderTexture);
-            output.SetPixels(dest);
+            var output = new Texture2D(baseTex.width, baseTex.height, TextureFormat.ARGB32, false);
+            output.SetPixels(outputPixels);
             output.Apply();
-            return baseTex;
+            return output;
         }
 
         /// <summary>

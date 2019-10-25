@@ -56,27 +56,13 @@ public class TextureCombinator : EditorWindow {
         }
 
         if (GUILayout.Button("生成")) {
-            /*
-            // outputテクスチャを作って最終的な色を書き込んでいく
-            var output = new Texture2D(_width, _height);
-            var dest = output.GetPixels();
-            var renderTexture = RenderTexture.GetTemporary(_width, _height);
-            for (int i = 0; i < 4; i++) {
-                // sourceテクスチャの情報をdestに移していく
-                // サイズを合わせるために一度renderTextureへの書き込みを挟む
-                var source = _textures[i];
-                Graphics.Blit(_textures[i], renderTexture);
-                var pixels = GetPixelsFromRT(renderTexture);
-                for (int j = 0; j < pixels.Length; j++) {
-                    dest[j][i] = pixels[j][(int)_channels[i]];
-                }
-            }
-            RenderTexture.ReleaseTemporary(renderTexture);
-            output.SetPixels(dest);
-            output.Apply();
-            */
-            var output = Utilities.Overlap(overTex:_textures[0], baseTex:_textures[1]);
+            var overTexPath = AssetDatabase.GetAssetPath(_textures[0]);
+            var baseTexPath = AssetDatabase.GetAssetPath(_textures[1]);
+            var overTex = FilerOperator.GetTexture(overTexPath);
+            var baseTex = FilerOperator.GetTexture(baseTexPath);
 
+            var output = Utilities.Overlap(overTex, baseTex);
+            
             // 出来たテクスチャを保存する
             var filePath = EditorUtility.SaveFilePanel("Save Texture", "Assets", "name", "png");
             if (!string.IsNullOrEmpty(filePath)) {
