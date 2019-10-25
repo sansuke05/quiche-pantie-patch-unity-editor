@@ -47,6 +47,14 @@ namespace AliceLaboratory.Editor {
             return fileNames;
         }
 
+
+        public static Texture2D GetTexture(string path) {
+            var tex = new Texture2D(0, 0);
+            tex.LoadImage(File.ReadAllBytes(path));
+            return tex;
+        }
+
+
         //Scriptable objectとして保存
         public void SaveAvatarsData(AvatarsData data) {
             var obj = ScriptableObject.CreateInstance<AvatarsDataObject>();

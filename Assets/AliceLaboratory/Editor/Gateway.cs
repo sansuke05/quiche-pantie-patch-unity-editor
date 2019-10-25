@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
 namespace AliceLaboratory.Editor {
 	public class Gateway {
@@ -71,7 +72,7 @@ namespace AliceLaboratory.Editor {
 			return GatewayState.GETTING_DREAM_TEXTURE;
 		}
 
-		public GatewayState GetConvertedTexture(string fileName, string modelName) {
+		public GatewayState GetConvertedTexture(string fileName, string modelName, Texture baseTex) {
 			Texture2D tex;
 
 			www.MoveNext();
@@ -79,6 +80,15 @@ namespace AliceLaboratory.Editor {
 			// リクエストが完了した時の処理
 			if (www.isDone) {
 				tex = www.texture;
+
+				// 重ねるアバターのテクスチャが設定されていればテクスチャを合成する
+				if (baseTex != null) {
+                    // Pathからアバターのテクスチャを取得
+                    var baseTexPath = AssetDatabase.GetAssetPath(baseTex);
+					var baseTex2D = FilerOperator.GetTexture(baseTexPath);
+					tex = Utilities.Overlap(overTex:tex, baseTex:baseTex2D);
+				}
+
 				var dir = "ConvertedDreams/" + modelName;
 				// テクスチャデータの保存
 				creator = new FilerOperator();
