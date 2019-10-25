@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
 namespace AliceLaboratory.Editor {
 	public class Gateway {
@@ -82,7 +83,9 @@ namespace AliceLaboratory.Editor {
 
 				// 重ねるアバターのテクスチャが設定されていればテクスチャを合成する
 				if (baseTex != null) {
-					var baseTex2D = Utilities.ToTexture2D(baseTex);
+                    // Pathからアバターのテクスチャを取得
+                    var baseTexPath = AssetDatabase.GetAssetPath(baseTex);
+					var baseTex2D = FilerOperator.GetTexture(baseTexPath);
 					tex = Utilities.Overlap(overTex:tex, baseTex:baseTex2D);
 				}
 
