@@ -33,7 +33,7 @@ namespace AliceLaboratory.Editor {
                 }
             }
             RenderTexture.ReleaseTemporary(renderTexture);
-            var output = new Texture2D(baseTex.width, baseTex.height, TextureFormat.ARGB32, false);
+            var output = new Texture2D(baseTex.width, baseTex.height);
             output.SetPixels(outputPixels);
             output.Apply();
             return output;
