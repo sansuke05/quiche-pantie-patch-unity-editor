@@ -10,7 +10,7 @@ namespace AliceLaboratory.Editor {
             var output = new Texture2D(baseTex.width, baseTex.height);
             var dest = output.GetPixels();
             var renderTexture = RenderTexture.GetTemporary(baseTex.width, baseTex.height);
-
+            
             Graphics.Blit(baseTex, renderTexture);
             dest = GetPixelsFromRT(renderTexture);
             Graphics.Blit(overTex, renderTexture);
@@ -18,7 +18,10 @@ namespace AliceLaboratory.Editor {
             for (int i = 0; i < pixels.Length; i++) {
                 // RTのアルファ値が1ならば上書き
                 if(pixels[i].a == 1) {
-                    dest[i] = pixels[i];
+                    dest[i].r = pixels[i].r;
+                    dest[i].g = pixels[i].g;
+                    dest[i].b = pixels[i].b;
+                    dest[i].a = pixels[i].a;
                 }
             }
             RenderTexture.ReleaseTemporary(renderTexture);
