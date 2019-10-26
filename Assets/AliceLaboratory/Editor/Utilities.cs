@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEditor;
 
 namespace AliceLaboratory.Editor {
     public class Utilities {
@@ -49,6 +50,19 @@ namespace AliceLaboratory.Editor {
             // ReadPixels()でレンダーターゲットからテクスチャ情報を生成する
             var texture = new Texture2D(target.width, target.height);
             texture.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0);
+            
+            // VRCSDK導入済みのプロジェクトでは色空間が変わっているので補正をかける
+            if (PlayerSettings.colorSpace == ColorSpace.Linear) {
+                // ガンマ補正
+                var color = texture.GetPixels();
+                for (int i = 0; i < color.Length; i++) {
+                    color[i].r = Mathf.LinearToGammaSpace(color[i].r);
+                    color[i].g = Mathf.LinearToGammaSpace(color[i].g);
+                    color[i].b = Mathf.LinearToGammaSpace(color[i].b);
+                }
+                texture.SetPixels(color);
+            }
+
             texture.Apply();
 
             RenderTexture.active = preRT;
