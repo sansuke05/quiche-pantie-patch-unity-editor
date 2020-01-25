@@ -390,6 +390,9 @@ Assets/VRCSDK.meta
 Assets/Plugins/VRCSDK/
 Assets/Plugins/VRCSDK.meta
 
+# Cash
+*.DS_Store
+
 # The project
 Assets/AliceLaboratory/Dreams/
 Assets/AliceLaboratory/Dreams.meta
