@@ -7,21 +7,19 @@ public class HelloWorld : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		// ConsoleにHello Worldと表示する
-		print("Hello World");
-		print("ぱんつはいいぞ！");
+		//Debug.Log("Hello World");
+		//Debug.Log("ぱんつ食べたい");
 
 		string pantie = "しまぱん";
-		print(pantie);
+		//Debug.Log(pantie);
 
-		int a = 1;
-		double b = 1.0;
-		bool c = true;
+		//int a = 1;
+		//double b = 1.0;
+		//bool c = true;
 
-		print(a);
-		print(b);
-		print(c);
-
-		
+		//print(a);
+		//print(b);
+		//print(c);
 
 	}
 	
