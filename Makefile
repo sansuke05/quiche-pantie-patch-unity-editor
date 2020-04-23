@@ -1,4 +1,4 @@
-UNITY_CLI?=cmd //c "C:\Program Files\Unity\Hub\Editor\2017.4.28f1\Editor\Unity.exe"
+UNITY_CLI?=cmd //c "C:\Program Files\Unity\Hub\Editor\2018.4.20f1\Editor\Unity.exe"
 LOG_FILE?=unity.log
 PROJ_PATH?=$(shell pwd)
 PACKAGE_NAME?=MyPlugin.unitypackage
