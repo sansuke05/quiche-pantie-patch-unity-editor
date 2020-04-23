@@ -390,6 +390,12 @@ Assets/VRCSDK.meta
 Assets/Plugins/VRCSDK/
 Assets/Plugins/VRCSDK.meta
 
+# Visual Studio code
+.vscode/
+
+# JetBrains Rider
+.idea/
+
 # Cash
 *.DS_Store
 
@@ -404,3 +410,5 @@ Assets/AliceLaboratory/Test/Example/
 Assets/AliceLaboratory/Test/Example.meta
 Assets/AliceLaboratory/Test/Results/
 Assets/AliceLaboratory/Test/Results.meta
+Assets/ExampleAssets/Textures/
+Assets/ExampleAssets/Textures.meta
