@@ -3,6 +3,9 @@ using UnityEditor;
 
 namespace AliceLaboratory.Editor
 {
+    /// <summary>
+    /// テクスチャの重ね合わせ処理,RenderTextureからピクセル情報を取得するメソッドを含むクラス
+    /// </summary>
     public class Utilities
     {
 
