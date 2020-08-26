@@ -41,19 +41,6 @@ namespace AliceLaboratory.Editor {
 			return dream;
 		}
 
-		/*
-		public AvatarsData GetAvatarsData() {
-			AvatarsData AvatarsData = null;
-
-			www.MoveNext();
-
-			if (www.isDone) {
-				AvatarsData = JsonUtility.FromJson<AvatarsData>(www.text);
-			}
-
-			return AvatarsData;
-		}*/
-
 		public async UniTask<AvatarsData> GetAvatarsData()
         {
 			var request = UnityWebRequest.Get(CONVERTING_BASE_URL);
