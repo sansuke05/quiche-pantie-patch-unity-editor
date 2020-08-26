@@ -73,8 +73,13 @@ namespace AliceLaboratory.Editor {
                 return;
             }
 
-            if (_state == GUIFlagState.DOWNLOADING_DREAMS) {
+            if (_state == GUIFlagState.DOWNLOADING_DREAMS) 
+            {
                 Download();
+            } 
+            else if (_state == GUIFlagState.UPDATING_AVATERS_DATA)
+            {
+                EditorUtility.DisplayProgressBar("Updating...", "Updating avaters data", _gateway.GetProgress());
             }
         }
 
@@ -98,7 +103,6 @@ namespace AliceLaboratory.Editor {
 
         private async void UpdateAvaters() 
         {
-            EditorUtility.DisplayProgressBar("Updating...", "Updating avaters data", _gateway.GetProgress());
             var data = await _gateway.GetAvatarsData();
             if(data != null) {
                 var file = new FilerOperator();

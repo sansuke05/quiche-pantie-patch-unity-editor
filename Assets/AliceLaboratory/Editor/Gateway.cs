@@ -7,10 +7,12 @@ namespace AliceLaboratory.Editor {
 	public class Gateway {
 		private const string DREAMS_BASE_URL = "https://labten.net/pantie-patch/api/dream/";
 		private const string CONVERTING_BASE_URL = "https://labten.net/pantie-patch/api/convert/";
-		
+
+		private float _progress = 0.0f;
 		private WWW www;
 
 		FilerOperator creator;
+
 
 		public Gateway() {
 			www = new WWW(DREAMS_BASE_URL);
@@ -46,6 +48,8 @@ namespace AliceLaboratory.Editor {
 			var request = UnityWebRequest.Get(CONVERTING_BASE_URL);
 
 			await request.SendWebRequest();
+
+			_progress = request.downloadProgress;
 
 			return JsonUtility.FromJson<AvatarsData>(request.downloadHandler.text);
         }
@@ -97,7 +101,7 @@ namespace AliceLaboratory.Editor {
 		}
 
 		public float GetProgress() {
-			return 0.0f;
+			return _progress;
 		}
 
 		public void Clear() {
