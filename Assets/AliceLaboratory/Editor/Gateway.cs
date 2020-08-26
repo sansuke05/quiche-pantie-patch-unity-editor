@@ -1,16 +1,15 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEngine.Networking;
+using Cysharp.Threading.Tasks;
 
 namespace AliceLaboratory.Editor {
 	public class Gateway {
-		//old URL
-		//private const string DREAMS_BASE_URL = "http://pantie-patch.herokuapp.com/api/dream/";
-		//private const string CONVERTING_BASE_URL = "http://pantie-patch.herokuapp.com/api/convert/";
 		private const string DREAMS_BASE_URL = "https://labten.net/pantie-patch/api/dream/";
 		private const string CONVERTING_BASE_URL = "https://labten.net/pantie-patch/api/convert/";
 		
 		private WWW www;
-	
+
 		FilerOperator creator;
 
 		public Gateway() {
@@ -42,6 +41,7 @@ namespace AliceLaboratory.Editor {
 			return dream;
 		}
 
+		/*
 		public AvatarsData GetAvatarsData() {
 			AvatarsData AvatarsData = null;
 
@@ -52,7 +52,16 @@ namespace AliceLaboratory.Editor {
 			}
 
 			return AvatarsData;
-		}
+		}*/
+
+		public async UniTask<AvatarsData> GetAvatarsData()
+        {
+			var request = UnityWebRequest.Get(CONVERTING_BASE_URL);
+
+			await request.SendWebRequest();
+
+			return JsonUtility.FromJson<AvatarsData>(request.downloadHandler.text);
+        }
 
 		public GatewayState GetTexture(string fileName) {
 			Texture2D tex;
@@ -86,7 +95,7 @@ namespace AliceLaboratory.Editor {
                     // Pathからアバターのテクスチャを取得
                     var baseTexPath = AssetDatabase.GetAssetPath(baseTex);
 					var baseTex2D = FilerOperator.GetTexture(baseTexPath);
-					tex = Utilities.Overlap(overTex:tex, baseTex:baseTex2D);
+					tex = TextureUtils.Overlap(overTex:tex, baseTex:baseTex2D);
 				}
 
 				var dir = "ConvertedDreams/" + modelName;
@@ -101,7 +110,7 @@ namespace AliceLaboratory.Editor {
 		}
 
 		public float GetProgress() {
-			return www.progress;
+			return 0.0f;
 		}
 
 		public void Clear() {

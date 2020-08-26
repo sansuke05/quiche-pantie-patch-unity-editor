@@ -4,7 +4,7 @@ using UnityEngine;
 namespace AliceLaboratory.Editor {
     public class PantiePatchEditorDLWindow : EditorWindow {
     
-        private Gateway _gate;
+        private Gateway _gateway;
 
         private GatewayOperator _operator;
 
@@ -12,7 +12,7 @@ namespace AliceLaboratory.Editor {
 
         private bool _processing;
 
-        private bool _disable = false;
+        private bool _guiDisable = false;
 
         /// <summary>
         /// Initialization
@@ -42,12 +42,12 @@ namespace AliceLaboratory.Editor {
         private void OnGUI() {
             using(new GUILayout.VerticalScope()) {
                 EditorGUILayout.LabelField("変換元パンツテクスチャダウンロード");
-                EditorGUI.BeginDisabledGroup(_disable);
+                EditorGUI.BeginDisabledGroup(_guiDisable);
                 if(GUILayout.Button("ダウンロード")) {
-                    _gate = new Gateway();
+                    _gateway = new Gateway();
                     _operator = new GatewayOperator();
                     _state = GUIFlagState.DOWNLOADING_DREAMS;
-                    _disable = true;
+                    _guiDisable = true;
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -55,11 +55,12 @@ namespace AliceLaboratory.Editor {
 
             using(new GUILayout.VerticalScope()) {
                 EditorGUILayout.LabelField("対応アバター情報の更新");
-                EditorGUI.BeginDisabledGroup(_disable);
+                EditorGUI.BeginDisabledGroup(_guiDisable);
                 if (GUILayout.Button("更新")) {
-                    _gate = new Gateway("GetAvatarsData");
+                    _gateway = new Gateway("GetAvatarsData");
                     _state = GUIFlagState.UPDATING_AVATERS_DATA;
-                    _disable = true;
+                    _guiDisable = true;
+                    UpdateAvaters();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -68,45 +69,44 @@ namespace AliceLaboratory.Editor {
         #endregion
 
         void OnUpdate() {
-            if (_gate == null) {
+            if (_gateway == null) {
                 return;
             }
 
             if (_state == GUIFlagState.DOWNLOADING_DREAMS) {
                 Download();
-            } else if(_state == GUIFlagState.UPDATING_AVATERS_DATA) {
-                UpdateAvaters();
             }
         }
 
         private void Download() {
-            EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _gate.GetProgress());
+            EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _gateway.GetProgress());
             if (!_processing) {
                 _operator.State = GatewayState.GETTING_DREAMS_LIST;
                 _processing = true;
             }
-            _operator.Execute(_gate);
+            _operator.Execute(_gateway);
         
             if (_operator.State == GatewayState.GETTING_DREAM_TEXTURES_COMPLETED) {
                 _processing = false;
-                _gate = null;
+                _gateway = null;
                 _state = GUIFlagState.NONE;
-                _disable = false;
+                _guiDisable = false;
                 EditorUtility.ClearProgressBar();
                 Debug.Log("Downloading completed!");
             }
         }
 
-        private void UpdateAvaters() {
-            EditorUtility.DisplayProgressBar("Updating...", "Updating avaters data", _gate.GetProgress());
-            var data = _gate.GetAvatarsData();
+        private async void UpdateAvaters() 
+        {
+            EditorUtility.DisplayProgressBar("Updating...", "Updating avaters data", _gateway.GetProgress());
+            var data = await _gateway.GetAvatarsData();
             if(data != null) {
                 var file = new FilerOperator();
                 file.SaveAvatarsData(data);
 
-                _gate = null;
+                _gateway = null;
                 _state = GUIFlagState.NONE;
-                _disable = false;
+                _guiDisable = false;
                 EditorUtility.ClearProgressBar();
                 Debug.Log("Updating completed!");
                 Debug.Log(string.Join(",",data.display_names));
@@ -115,12 +115,12 @@ namespace AliceLaboratory.Editor {
         }
 
         private void Clear() {
-            if (_gate != null) {
-                _gate.Clear();
+            if (_gateway != null) {
+                _gateway.Clear();
             }
 
-            _disable = false;
-            _gate = null;
+            _guiDisable = false;
+            _gateway = null;
         }
     }
 }
