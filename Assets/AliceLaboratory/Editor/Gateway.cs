@@ -1,111 +1,86 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEngine.Networking;
+using Cysharp.Threading.Tasks;
 
 namespace AliceLaboratory.Editor {
 	public class Gateway {
-		//old URL
-		//private const string DREAMS_BASE_URL = "http://pantie-patch.herokuapp.com/api/dream/";
-		//private const string CONVERTING_BASE_URL = "http://pantie-patch.herokuapp.com/api/convert/";
 		private const string DREAMS_BASE_URL = "https://labten.net/pantie-patch/api/dream/";
 		private const string CONVERTING_BASE_URL = "https://labten.net/pantie-patch/api/convert/";
-		
-		private WWW www;
-	
-		FilerOperator creator;
 
-		public Gateway() {
-			www = new WWW(DREAMS_BASE_URL);
-		}
+		private float _progress = 0.0f;
 
-		public Gateway(string option) {
-			www = new WWW(CONVERTING_BASE_URL);
-		}
+		
+		public async UniTask<Dream> GetDreamsData() 
+		{
+			var request = UnityWebRequest.Get(DREAMS_BASE_URL);
 
-		public Gateway(string fileName, string modelName) {
-			www = new WWW(CONVERTING_BASE_URL + modelName + "/" + fileName);
-		}
-		
-		public void SetUrlFromFileName(string fileName) {
-			www = new WWW(DREAMS_BASE_URL + fileName);
-		}
-		
-		public Dream GetDreams() {
-			Dream dream = null;
-		
-			www.MoveNext();
-		
-			// リクエストが完了した時の処理
-			if (www.isDone) {
-				dream = JsonUtility.FromJson<Dream>(www.text);
-			}
-		
-			return dream;
-		}
+			await request.SendWebRequest();
 
-		public AvatarsData GetAvatarsData() {
-			AvatarsData AvatarsData = null;
+			_progress = request.downloadProgress;
 
-			www.MoveNext();
-
-			if (www.isDone) {
-				AvatarsData = JsonUtility.FromJson<AvatarsData>(www.text);
+			if (request.isNetworkError || request.isHttpError)
+			{
+				Debug.LogError(request.error);
+				return null;
 			}
 
-			return AvatarsData;
+			return JsonUtility.FromJson<Dream>(request.downloadHandler.text);
 		}
 
-		public GatewayState GetTexture(string fileName) {
-			Texture2D tex;
+		public async UniTask<AvatarsData> GetAvatarsData()
+        {
+			var request = UnityWebRequest.Get(CONVERTING_BASE_URL);
 
-			www.MoveNext();
+			await request.SendWebRequest();
 
-			// リクエストが完了した時の処理
-			if (www.isDone) {
-				tex = www.texture;
-				// テクスチャデータの保存
-				creator = new FilerOperator();
-				creator.Create(fileName, "Dreams", tex);
-			
-				return GatewayState.GETTING_DREAM_TEXTURE_FINISHED;
+			_progress = request.downloadProgress;
+
+			if (request.isNetworkError || request.isHttpError)
+			{
+				Debug.LogError(request.error);
+				return null;
 			}
 
-			return GatewayState.GETTING_DREAM_TEXTURE;
+			return JsonUtility.FromJson<AvatarsData>(request.downloadHandler.text);
+        }
+
+		public async UniTask<Texture2D> GetDreamTexture(string fileName)
+		{
+			var request = UnityWebRequestTexture.GetTexture(DREAMS_BASE_URL + fileName);
+
+			await request.SendWebRequest();
+
+			_progress = request.downloadProgress;
+
+			if (request.isNetworkError || request.isHttpError)
+            {
+				Debug.LogError(request.error);
+				return null;
+            }
+
+			return DownloadHandlerTexture.GetContent(request);
 		}
 
-		public GatewayState GetConvertedTexture(string fileName, string modelName, Texture baseTex) {
-			Texture2D tex;
+		public async UniTask<Texture2D> GetConvertedTexture(string fileName, string modelName, Texture baseTex) 
+		{
+			var request = UnityWebRequestTexture.GetTexture(CONVERTING_BASE_URL + modelName + "/" + fileName);
 
-			www.MoveNext();
-			
-			// リクエストが完了した時の処理
-			if (www.isDone) {
-				tex = www.texture;
+			await request.SendWebRequest();
 
-				// 重ねるアバターのテクスチャが設定されていればテクスチャを合成する
-				if (baseTex != null) {
-                    // Pathからアバターのテクスチャを取得
-                    var baseTexPath = AssetDatabase.GetAssetPath(baseTex);
-					var baseTex2D = FilerOperator.GetTexture(baseTexPath);
-					tex = Utilities.Overlap(overTex:tex, baseTex:baseTex2D);
-				}
+			_progress = request.downloadProgress;
 
-				var dir = "ConvertedDreams/" + modelName;
-				// テクスチャデータの保存
-				creator = new FilerOperator();
-				creator.Create(fileName, dir, tex);
-			
-				return GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED;
+			if (request.isNetworkError || request.isHttpError)
+			{
+				Debug.LogError(request.error);
+				return null;
 			}
-			
-			return GatewayState.GETTING_CONVERTED_TEXTURE;
+
+			return DownloadHandlerTexture.GetContent(request);
 		}
 
 		public float GetProgress() {
-			return www.progress;
-		}
-
-		public void Clear() {
-			www.Dispose();
+			return _progress;
 		}
 	}
 }

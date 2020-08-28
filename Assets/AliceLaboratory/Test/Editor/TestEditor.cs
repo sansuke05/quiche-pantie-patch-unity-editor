@@ -18,7 +18,7 @@ namespace AliceLaboratory.Editor {
         }
 
         public static Texture2D Convert(Texture texture) {
-            return Utilities.ToTexture2D(texture);
+            return TextureUtils.ToTexture2D(texture);
         }
     }
 }

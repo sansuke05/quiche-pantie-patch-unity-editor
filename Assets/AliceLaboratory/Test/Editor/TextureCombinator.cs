@@ -61,7 +61,7 @@ public class TextureCombinator : EditorWindow {
             var overTex = FilerOperator.GetTexture(overTexPath);
             var baseTex = FilerOperator.GetTexture(baseTexPath);
 
-            var output = Utilities.Overlap(overTex, baseTex);
+            var output = TextureUtils.Overlap(overTex, baseTex);
             
             // 出来たテクスチャを保存する
             var filePath = EditorUtility.SaveFilePanel("Save Texture", "Assets", "name", "png");

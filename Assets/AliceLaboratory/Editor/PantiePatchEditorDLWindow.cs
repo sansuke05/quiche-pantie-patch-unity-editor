@@ -4,15 +4,11 @@ using UnityEngine;
 namespace AliceLaboratory.Editor {
     public class PantiePatchEditorDLWindow : EditorWindow {
     
-        private Gateway _gate;
-
-        private GatewayOperator _operator;
+        private Gateway _gateway;
 
         private GUIFlagState _state = GUIFlagState.NONE;
 
-        private bool _processing;
-
-        private bool _disable = false;
+        private bool _guiDisable = false;
 
         /// <summary>
         /// Initialization
@@ -42,12 +38,12 @@ namespace AliceLaboratory.Editor {
         private void OnGUI() {
             using(new GUILayout.VerticalScope()) {
                 EditorGUILayout.LabelField("変換元パンツテクスチャダウンロード");
-                EditorGUI.BeginDisabledGroup(_disable);
+                EditorGUI.BeginDisabledGroup(_guiDisable);
                 if(GUILayout.Button("ダウンロード")) {
-                    _gate = new Gateway();
-                    _operator = new GatewayOperator();
+                    _gateway = new Gateway();
                     _state = GUIFlagState.DOWNLOADING_DREAMS;
-                    _disable = true;
+                    _guiDisable = true;
+                    DownloadDreams();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -55,11 +51,12 @@ namespace AliceLaboratory.Editor {
 
             using(new GUILayout.VerticalScope()) {
                 EditorGUILayout.LabelField("対応アバター情報の更新");
-                EditorGUI.BeginDisabledGroup(_disable);
+                EditorGUI.BeginDisabledGroup(_guiDisable);
                 if (GUILayout.Button("更新")) {
-                    _gate = new Gateway("GetAvatarsData");
+                    _gateway = new Gateway();
                     _state = GUIFlagState.UPDATING_AVATERS_DATA;
-                    _disable = true;
+                    _guiDisable = true;
+                    UpdateAvaters();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -68,59 +65,77 @@ namespace AliceLaboratory.Editor {
         #endregion
 
         void OnUpdate() {
-            if (_gate == null) {
+            if (_gateway == null) {
                 return;
             }
 
-            if (_state == GUIFlagState.DOWNLOADING_DREAMS) {
-                Download();
-            } else if(_state == GUIFlagState.UPDATING_AVATERS_DATA) {
-                UpdateAvaters();
+            if (_state == GUIFlagState.DOWNLOADING_DREAMS) 
+            {
+                EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _gateway.GetProgress());
+            } 
+            else if (_state == GUIFlagState.UPDATING_AVATERS_DATA)
+            {
+                EditorUtility.DisplayProgressBar("Updating...", "Updating avaters data", _gateway.GetProgress());
             }
         }
 
-        private void Download() {
-            EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _gate.GetProgress());
-            if (!_processing) {
-                _operator.State = GatewayState.GETTING_DREAMS_LIST;
-                _processing = true;
+        private async void DownloadDreams()
+        {
+            // --- 変換元パンツテクスチャのリストをDL ---
+            var dreamsData = await _gateway.GetDreamsData();
+            if (dreamsData == null)
+            {
+                Debug.LogError("Download Error: 変換元パンツ情報のダウンロードに失敗しました");
+                ClearGUIWaiting();
+                return;
             }
-            _operator.Execute(_gate);
-        
-            if (_operator.State == GatewayState.GETTING_DREAM_TEXTURES_COMPLETED) {
-                _processing = false;
-                _gate = null;
-                _state = GUIFlagState.NONE;
-                _disable = false;
-                EditorUtility.ClearProgressBar();
-                Debug.Log("Downloading completed!");
+
+            // --- 変換元テクスチャを一括ダウンロード&保存 ---
+            var existFiles = FilerOperator.getExistsTextures();
+
+            foreach(var imageName in dreamsData.images)
+            {
+                // 既にローカルにテクスチャが存在する場合はスキップ
+                if (existFiles != null && existFiles.Contains(imageName))
+                {
+                    continue;
+                }
+
+                var tex = await _gateway.GetDreamTexture(imageName);
+                
+                // テクスチャデータの保存
+                var creator = new FilerOperator();
+                creator.Create(imageName, "Dreams", tex);
             }
+
+            ClearGUIWaiting();
         }
 
-        private void UpdateAvaters() {
-            EditorUtility.DisplayProgressBar("Updating...", "Updating avaters data", _gate.GetProgress());
-            var data = _gate.GetAvatarsData();
+        private async void UpdateAvaters() 
+        {
+            var data = await _gateway.GetAvatarsData();
             if(data != null) {
                 var file = new FilerOperator();
                 file.SaveAvatarsData(data);
 
-                _gate = null;
-                _state = GUIFlagState.NONE;
-                _disable = false;
-                EditorUtility.ClearProgressBar();
+                ClearGUIWaiting();
                 Debug.Log("Updating completed!");
                 Debug.Log(string.Join(",",data.display_names));
                 Debug.Log(string.Join(",",data.models));
             }
         }
 
-        private void Clear() {
-            if (_gate != null) {
-                _gate.Clear();
-            }
+        private void ClearGUIWaiting()
+        {
+            _gateway = null;
+            _state = GUIFlagState.NONE;
+            _guiDisable = false;
+            EditorUtility.ClearProgressBar();
+        }
 
-            _disable = false;
-            _gate = null;
+        private void Clear() {
+            _guiDisable = false;
+            _gateway = null;
         }
     }
 }
