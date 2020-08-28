@@ -4,7 +4,7 @@ UNITY_PATH="C:\Program Files\Unity\Hub\Editor\2018.4.20f1\Editor\Unity.exe"
 LOG_FILE=unity.log
 PROJ_PATH="D:\sansuke05\projects\unity\QuichePantiePatchEditor"
 PACKAGE_NAME=QuichePantiePatchEditor.unitypackage
-EXPORT_PACKAGES="Assets/AliceLaboratory/Editor"
+EXPORT_PACKAGES="Assets/AliceLaboratory/Editor Assets/Plugins/UniTask"
 EXPORT_PARENT_DIR=/d/sansuke05/UnityAssets/editor
 EXPORT_DIR=${EXPORT_PARENT_DIR}/QuichePantiePatchEditor_v$1
 
