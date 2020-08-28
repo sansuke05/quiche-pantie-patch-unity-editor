@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AliceLaboratory.Editor {
     public class PantiePatchEditorConvertWindow : EditorWindow {
 
-        private Gateway _gate;
+        private Gateway _gateway;
         
         private Texture convertTexture;
 
@@ -80,8 +80,9 @@ namespace AliceLaboratory.Editor {
                 _disable[0] = convertTexture == null || selectedIndex < 0;
                 EditorGUI.BeginDisabledGroup(_disable[_disableMode]);
                 if(GUILayout.Button("変換")) {
-                    _gate = new Gateway(convertTexture.name + ".png", _avatersData.models[selectedIndex]);
+                    _gateway = new Gateway();
                     _disableMode = 1;
+                    Convert();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -89,30 +90,42 @@ namespace AliceLaboratory.Editor {
         
         #endregion
 
-        void OnUpdate() {
-            if (_gate != null) {
-                Convert();
+        void OnUpdate() 
+        {
+            if (_gateway != null) {
+                EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _gateway.GetProgress());
             }
         }
 
-        private void Convert() {
-            EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _gate.GetProgress());
-            var state = _gate.GetConvertedTexture(convertTexture.name + ".png", _avatersData.models[selectedIndex], baseAvaterTexture);
-            if (state == GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED) {
-                _gate = null;
-                _disableMode = 0;
-                EditorUtility.ClearProgressBar();
-                Debug.Log("Converting completed!");
+        private async void Convert() 
+        {
+            var fileName = convertTexture.name + ".png";
+            var modelName = _avatersData.models[selectedIndex];
+            var tex = await _gateway.GetConvertedTexture(fileName, modelName, baseAvaterTexture);
+
+            // 重ねるアバターのテクスチャが設定されていればテクスチャを合成する
+            if (baseAvaterTexture != null)
+            {
+                // Pathからアバターのテクスチャを取得
+                var baseTexPath = AssetDatabase.GetAssetPath(baseAvaterTexture);
+                var baseTex2D = FilerOperator.GetTexture(baseTexPath);
+                tex = TextureUtils.Overlap(overTex: tex, baseTex: baseTex2D);
             }
+
+            // テクスチャデータの保存
+            var dir = "ConvertedDreams/" + modelName;
+            var creator = new FilerOperator();
+            creator.Create(fileName, dir, tex);
+
+            _gateway = null;
+            _disableMode = 0;
+            EditorUtility.ClearProgressBar();
+            Debug.Log("Converting completed!");
         }
         
         private void Clear() {
-            if (_gate != null) {
-                _gate.Clear();
-            }
-
             _disableMode = 0;
-            _gate = null;
+            _gateway = null;
         }
     }
 }

@@ -134,10 +134,6 @@ namespace AliceLaboratory.Editor {
         }
 
         private void Clear() {
-            if (_gateway != null) {
-                _gateway.Clear();
-            }
-
             _guiDisable = false;
             _gateway = null;
         }

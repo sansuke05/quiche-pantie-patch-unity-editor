@@ -9,18 +9,7 @@ namespace AliceLaboratory.Editor {
 		private const string CONVERTING_BASE_URL = "https://labten.net/pantie-patch/api/convert/";
 
 		private float _progress = 0.0f;
-		private WWW www;
 
-		FilerOperator creator;
-
-
-		public Gateway() {
-			www = new WWW(DREAMS_BASE_URL);
-		}
-
-		public Gateway(string fileName, string modelName) {
-			www = new WWW(CONVERTING_BASE_URL + modelName + "/" + fileName);
-		}
 		
 		public async UniTask<Dream> GetDreamsData() 
 		{
@@ -70,45 +59,28 @@ namespace AliceLaboratory.Editor {
 				return null;
             }
 
-			Texture2D tex = DownloadHandlerTexture.GetContent(request);
-
-			return tex;
+			return DownloadHandlerTexture.GetContent(request);
 		}
 
-		public GatewayState GetConvertedTexture(string fileName, string modelName, Texture baseTex) {
-			Texture2D tex;
+		public async UniTask<Texture2D> GetConvertedTexture(string fileName, string modelName, Texture baseTex) 
+		{
+			var request = UnityWebRequestTexture.GetTexture(CONVERTING_BASE_URL + modelName + "/" + fileName);
 
-			www.MoveNext();
-			
-			// リクエストが完了した時の処理
-			if (www.isDone) {
-				tex = www.texture;
+			await request.SendWebRequest();
 
-				// 重ねるアバターのテクスチャが設定されていればテクスチャを合成する
-				if (baseTex != null) {
-                    // Pathからアバターのテクスチャを取得
-                    var baseTexPath = AssetDatabase.GetAssetPath(baseTex);
-					var baseTex2D = FilerOperator.GetTexture(baseTexPath);
-					tex = TextureUtils.Overlap(overTex:tex, baseTex:baseTex2D);
-				}
+			_progress = request.downloadProgress;
 
-				var dir = "ConvertedDreams/" + modelName;
-				// テクスチャデータの保存
-				creator = new FilerOperator();
-				creator.Create(fileName, dir, tex);
-			
-				return GatewayState.GETTING_CONVERTED_TEXTURE_COMPLETED;
+			if (request.isNetworkError || request.isHttpError)
+			{
+				Debug.LogError(request.error);
+				return null;
 			}
-			
-			return GatewayState.GETTING_CONVERTED_TEXTURE;
+
+			return DownloadHandlerTexture.GetContent(request);
 		}
 
 		public float GetProgress() {
 			return _progress;
-		}
-
-		public void Clear() {
-			www.Dispose();
 		}
 	}
 }
