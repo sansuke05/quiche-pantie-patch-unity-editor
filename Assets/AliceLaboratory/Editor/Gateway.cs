@@ -18,29 +18,25 @@ namespace AliceLaboratory.Editor {
 			www = new WWW(DREAMS_BASE_URL);
 		}
 
-		public Gateway(string option) {
-			www = new WWW(CONVERTING_BASE_URL);
-		}
-
 		public Gateway(string fileName, string modelName) {
 			www = new WWW(CONVERTING_BASE_URL + modelName + "/" + fileName);
 		}
 		
-		public void SetUrlFromFileName(string fileName) {
-			www = new WWW(DREAMS_BASE_URL + fileName);
-		}
-		
-		public Dream GetDreams() {
-			Dream dream = null;
-		
-			www.MoveNext();
-		
-			// リクエストが完了した時の処理
-			if (www.isDone) {
-				dream = JsonUtility.FromJson<Dream>(www.text);
+		public async UniTask<Dream> GetDreamsData() 
+		{
+			var request = UnityWebRequest.Get(DREAMS_BASE_URL);
+
+			await request.SendWebRequest();
+
+			_progress = request.downloadProgress;
+
+			if (request.isNetworkError || request.isHttpError)
+			{
+				Debug.LogError(request.error);
+				return null;
 			}
-		
-			return dream;
+
+			return JsonUtility.FromJson<Dream>(request.downloadHandler.text);
 		}
 
 		public async UniTask<AvatarsData> GetAvatarsData()
@@ -51,25 +47,32 @@ namespace AliceLaboratory.Editor {
 
 			_progress = request.downloadProgress;
 
+			if (request.isNetworkError || request.isHttpError)
+			{
+				Debug.LogError(request.error);
+				return null;
+			}
+
 			return JsonUtility.FromJson<AvatarsData>(request.downloadHandler.text);
         }
 
-		public GatewayState GetTexture(string fileName) {
-			Texture2D tex;
+		public async UniTask<Texture2D> GetDreamTexture(string fileName)
+		{
+			var request = UnityWebRequestTexture.GetTexture(DREAMS_BASE_URL + fileName);
 
-			www.MoveNext();
+			await request.SendWebRequest();
 
-			// リクエストが完了した時の処理
-			if (www.isDone) {
-				tex = www.texture;
-				// テクスチャデータの保存
-				creator = new FilerOperator();
-				creator.Create(fileName, "Dreams", tex);
-			
-				return GatewayState.GETTING_DREAM_TEXTURE_FINISHED;
-			}
+			_progress = request.downloadProgress;
 
-			return GatewayState.GETTING_DREAM_TEXTURE;
+			if (request.isNetworkError || request.isHttpError)
+            {
+				Debug.LogError(request.error);
+				return null;
+            }
+
+			Texture2D tex = DownloadHandlerTexture.GetContent(request);
+
+			return tex;
 		}
 
 		public GatewayState GetConvertedTexture(string fileName, string modelName, Texture baseTex) {

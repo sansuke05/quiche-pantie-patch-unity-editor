@@ -2,10 +2,14 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace AliceLaboratory.Editor {
+
+    /// <summary>
+    /// 負の遺産です。OnUpdate()を使ったデータのダウンロードは毎フレームExecute()メソッド
+    /// が呼ばれるため、今の状態を持っておく必要が生じる。
+    /// その結果、状態遷移と今自分がどの状態にいるのかを毎フレーム確認することになる。
+    /// これは、コードを読む際も同様に処理を追いかける必要が生じるため、コードの可読性が悪くなる。
+    /// </summary>
     public class GatewayOperator {
-
-        private GatewayState _state = GatewayState.NONE;
-
         private Dream _dream;
 
         private List<string> _existsFiles = new List<string>();
@@ -14,19 +18,16 @@ namespace AliceLaboratory.Editor {
 
         private int _counter;
 
-        public GatewayState State {
-            set { _state = value; }
-            get { return _state; }
-        }
+        public GatewayState State { set; get; } = GatewayState.NONE;
 
-        public void Execute(Gateway gateway) {
+        public async void Execute(Gateway gateway) {
             // 通信実装を毎フレーム呼び出し
-            switch (_state) {
+            switch (State) {
                 case GatewayState.GETTING_DREAMS_LIST:
                     _existsFiles = FilerOperator.getExistsTextures();
-                    _dream = gateway.GetDreams();
+                    _dream = await gateway.GetDreamsData();
                     if (_dream != null) {
-                        _state = GatewayState.GETTING_DREAM_TEXTURE_INIT;
+                        State = GatewayState.GETTING_DREAM_TEXTURE_INIT;
                     }
                     break;
 
@@ -34,23 +35,23 @@ namespace AliceLaboratory.Editor {
                     _image = _dream.images[_counter];
                     // 既にローカルにテクスチャが存在する場合はスキップ
                     if (_existsFiles != null && _existsFiles.Contains(_image)) {
-                        _state = GatewayState.GETTING_DREAM_TEXTURE_FINISHED;
+                        State = GatewayState.GETTING_DREAM_TEXTURE_FINISHED;
                         break;
                     }
-                    gateway.SetUrlFromFileName(_image);
-                    _state = gateway.GetTexture(_image);
+                    //gateway.SetUrlFromFileName(_image);
+                    //State = gateway.GetDreamTexture(_image);
                     break;
 
                 case GatewayState.GETTING_DREAM_TEXTURE:
-                    _state = gateway.GetTexture(_image);
+                    //State = gateway.GetDreamTexture(_image);
                     break;
 
                 case GatewayState.GETTING_DREAM_TEXTURE_FINISHED:
                     _counter++;
                     if (_counter < _dream.images.Length) {
-                        _state = GatewayState.GETTING_DREAM_TEXTURE_INIT;
+                        State = GatewayState.GETTING_DREAM_TEXTURE_INIT;
                     } else {
-                        _state = GatewayState.GETTING_DREAM_TEXTURES_COMPLETED;
+                        State = GatewayState.GETTING_DREAM_TEXTURES_COMPLETED;
                     }
                     break;
 

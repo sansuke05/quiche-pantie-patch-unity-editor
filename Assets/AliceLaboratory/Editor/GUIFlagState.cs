@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AliceLaboratory.Editor {
+﻿namespace AliceLaboratory.Editor {
     public enum GUIFlagState {
         NONE,
         DOWNLOADING_DREAMS,

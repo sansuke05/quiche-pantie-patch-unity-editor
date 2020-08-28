@@ -6,11 +6,7 @@ namespace AliceLaboratory.Editor {
     
         private Gateway _gateway;
 
-        private GatewayOperator _operator;
-
         private GUIFlagState _state = GUIFlagState.NONE;
-
-        private bool _processing;
 
         private bool _guiDisable = false;
 
@@ -45,9 +41,9 @@ namespace AliceLaboratory.Editor {
                 EditorGUI.BeginDisabledGroup(_guiDisable);
                 if(GUILayout.Button("ダウンロード")) {
                     _gateway = new Gateway();
-                    _operator = new GatewayOperator();
                     _state = GUIFlagState.DOWNLOADING_DREAMS;
                     _guiDisable = true;
+                    DownloadDreams();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -57,7 +53,7 @@ namespace AliceLaboratory.Editor {
                 EditorGUILayout.LabelField("対応アバター情報の更新");
                 EditorGUI.BeginDisabledGroup(_guiDisable);
                 if (GUILayout.Button("更新")) {
-                    _gateway = new Gateway("GetAvatarsData");
+                    _gateway = new Gateway();
                     _state = GUIFlagState.UPDATING_AVATERS_DATA;
                     _guiDisable = true;
                     UpdateAvaters();
@@ -75,7 +71,7 @@ namespace AliceLaboratory.Editor {
 
             if (_state == GUIFlagState.DOWNLOADING_DREAMS) 
             {
-                Download();
+                EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _gateway.GetProgress());
             } 
             else if (_state == GUIFlagState.UPDATING_AVATERS_DATA)
             {
@@ -83,22 +79,36 @@ namespace AliceLaboratory.Editor {
             }
         }
 
-        private void Download() {
-            EditorUtility.DisplayProgressBar("Downloading...", "Downloading our dreams", _gateway.GetProgress());
-            if (!_processing) {
-                _operator.State = GatewayState.GETTING_DREAMS_LIST;
-                _processing = true;
+        private async void DownloadDreams()
+        {
+            // --- 変換元パンツテクスチャのリストをDL ---
+            var dreamsData = await _gateway.GetDreamsData();
+            if (dreamsData == null)
+            {
+                Debug.LogError("Download Error: 変換元パンツ情報のダウンロードに失敗しました");
+                ClearGUIWaiting();
+                return;
             }
-            _operator.Execute(_gateway);
-        
-            if (_operator.State == GatewayState.GETTING_DREAM_TEXTURES_COMPLETED) {
-                _processing = false;
-                _gateway = null;
-                _state = GUIFlagState.NONE;
-                _guiDisable = false;
-                EditorUtility.ClearProgressBar();
-                Debug.Log("Downloading completed!");
+
+            // --- 変換元テクスチャを一括ダウンロード&保存 ---
+            var existFiles = FilerOperator.getExistsTextures();
+
+            foreach(var imageName in dreamsData.images)
+            {
+                // 既にローカルにテクスチャが存在する場合はスキップ
+                if (existFiles != null && existFiles.Contains(imageName))
+                {
+                    continue;
+                }
+
+                var tex = await _gateway.GetDreamTexture(imageName);
+                
+                // テクスチャデータの保存
+                var creator = new FilerOperator();
+                creator.Create(imageName, "Dreams", tex);
             }
+
+            ClearGUIWaiting();
         }
 
         private async void UpdateAvaters() 
@@ -108,14 +118,19 @@ namespace AliceLaboratory.Editor {
                 var file = new FilerOperator();
                 file.SaveAvatarsData(data);
 
-                _gateway = null;
-                _state = GUIFlagState.NONE;
-                _guiDisable = false;
-                EditorUtility.ClearProgressBar();
+                ClearGUIWaiting();
                 Debug.Log("Updating completed!");
                 Debug.Log(string.Join(",",data.display_names));
                 Debug.Log(string.Join(",",data.models));
             }
+        }
+
+        private void ClearGUIWaiting()
+        {
+            _gateway = null;
+            _state = GUIFlagState.NONE;
+            _guiDisable = false;
+            EditorUtility.ClearProgressBar();
         }
 
         private void Clear() {
