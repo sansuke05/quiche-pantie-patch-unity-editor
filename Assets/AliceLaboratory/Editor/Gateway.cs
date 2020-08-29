@@ -10,14 +10,22 @@ namespace AliceLaboratory.Editor {
 
 		private float _progress = 0.0f;
 
+		async UniTaskVoid UpdateProgress(UnityWebRequest request)
+        {
+            while (!request.isDone)
+            {
+				_progress = request.downloadProgress;
+				await UniTask.Yield();
+			}
+			_progress = request.downloadProgress;
+        }
 		
 		public async UniTask<Dream> GetDreamsData() 
 		{
 			var request = UnityWebRequest.Get(DREAMS_BASE_URL);
-
+			UpdateProgress(request).Forget();
 			await request.SendWebRequest();
 
-			_progress = request.downloadProgress;
 
 			if (request.isNetworkError || request.isHttpError)
 			{
@@ -31,10 +39,9 @@ namespace AliceLaboratory.Editor {
 		public async UniTask<AvatarsData> GetAvatarsData()
         {
 			var request = UnityWebRequest.Get(CONVERTING_BASE_URL);
-
+			UpdateProgress(request).Forget();
 			await request.SendWebRequest();
 
-			_progress = request.downloadProgress;
 
 			if (request.isNetworkError || request.isHttpError)
 			{
@@ -48,10 +55,9 @@ namespace AliceLaboratory.Editor {
 		public async UniTask<Texture2D> GetDreamTexture(string fileName)
 		{
 			var request = UnityWebRequestTexture.GetTexture(DREAMS_BASE_URL + fileName);
-
+			UpdateProgress(request).Forget();
 			await request.SendWebRequest();
 
-			_progress = request.downloadProgress;
 
 			if (request.isNetworkError || request.isHttpError)
             {
@@ -65,10 +71,9 @@ namespace AliceLaboratory.Editor {
 		public async UniTask<Texture2D> GetConvertedTexture(string fileName, string modelName, Texture baseTex) 
 		{
 			var request = UnityWebRequestTexture.GetTexture(CONVERTING_BASE_URL + modelName + "/" + fileName);
-
+			UpdateProgress(request).Forget();
 			await request.SendWebRequest();
 
-			_progress = request.downloadProgress;
 
 			if (request.isNetworkError || request.isHttpError)
 			{
