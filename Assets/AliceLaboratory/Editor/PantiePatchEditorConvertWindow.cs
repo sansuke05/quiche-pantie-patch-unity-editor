@@ -9,16 +9,15 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 #else
 using UnityEngine.Experimental.UIElements;
-using UnityEditor.Experimental.UIElements;
 #endif
 
 
 namespace AliceLaboratory.Editor {
     public class PantiePatchEditorConvertWindow : EditorWindow {
 
-
+#pragma warning disable CS0414//The field 'PantiePatchEditorConvertWindow.visualTree' is assigned but its value is never used
         [SerializeField] VisualTreeAsset visualTree = default;
-        
+#pragma warning restore
 
         AsyncReactiveProperty<Texture> BaseAvatarTexture { get; } = new AsyncReactiveProperty<Texture>(null);
         AsyncReactiveProperty<Texture> ConvertTexture { get; } = new AsyncReactiveProperty<Texture>(null);
@@ -52,14 +51,19 @@ namespace AliceLaboratory.Editor {
 
             CanStartConvert = UniTaskAsyncEnumerable.CombineLatest(ConvertTexture, SelectedAvatarIndex, ConvertRunning,
                 (convertTexture, selectedAvatarIndex, convertRunning) => convertTexture != null && selectedAvatarIndex!=-1 && !convertRunning).ToReadOnlyAsyncReactiveProperty(default);
-
+#if UNITY_2019_4_OR_NEWER
             CreateGUI();
+#endif
+
         }
+
+#if !UNITY_2019_4_OR_NEWER
+
 
         /// <summary>
         /// GUI setting
         /// </summary>
-        private void _OnGUI() {
+        private void OnGUI() {
             using (new GUILayout.VerticalScope()) {
                 using (new GUILayout.HorizontalScope()) {
                     EditorGUILayout.LabelField("変換するパンツを選択");
@@ -95,18 +99,17 @@ namespace AliceLaboratory.Editor {
                 EditorGUI.EndDisabledGroup();
             }
         }
-        
-        #endregion
-
-         void CreateGUI()
-         {
-#if UNITY_2019_1_OR_NEWER
-            var root = rootVisualElement;
-#else
-            var root = this.GetRootVisualContainer();
 #endif
+#endregion
+
+#if UNITY_2019_4_OR_NEWER
+
+
+        void CreateGUI()
+         {
+
+            var root = rootVisualElement;
             visualTree.CloneTree(root);
-            root.Bind(new SerializedObject(this));
             
 
         
@@ -156,7 +159,7 @@ namespace AliceLaboratory.Editor {
         
 
         }
-
+#endif
         string SelectedModelName => _avatarsData.models[SelectedAvatarIndex.Value];
 
 
