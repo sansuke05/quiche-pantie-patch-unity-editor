@@ -1,0 +1,17 @@
+{
+    "name": "AliceLaboratory.Test.Editor",
+    "references": [
+        "AliceLaboratory.Editor",
+        "UniTask"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": []
+}
