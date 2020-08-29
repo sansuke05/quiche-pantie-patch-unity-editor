@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <uie:ObjectField label="Select pantie to convert" name="ConvertTextureSelector" />
+    <uie:ObjectField label="Select target avatar texture" binding-path="baseAvatarTexture" name="BaseAvatarTextureSelector" />
+    <ui:Label text="Target avatar" />
+    <ui:IMGUIContainer />
+    <ui:Button text="Convert" name="ConvertButton" />
+</ui:UXML>
