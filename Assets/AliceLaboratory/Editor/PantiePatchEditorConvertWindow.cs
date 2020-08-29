@@ -1,6 +1,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 namespace AliceLaboratory.Editor {
     public class PantiePatchEditorConvertWindow : EditorWindow {
@@ -82,7 +83,7 @@ namespace AliceLaboratory.Editor {
                 if(GUILayout.Button("変換")) {
                     _gateway = new Gateway();
                     _disableMode = 1;
-                    Convert();
+                    Convert().Forget();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -97,7 +98,7 @@ namespace AliceLaboratory.Editor {
             }
         }
 
-        private async void Convert() 
+        private async UniTaskVoid Convert() 
         {
             var fileName = convertTexture.name + ".png";
             var modelName = _avatersData.models[selectedIndex];
