@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -43,7 +44,7 @@ namespace AliceLaboratory.Editor {
                     _gateway = new Gateway();
                     _state = GUIFlagState.DOWNLOADING_DREAMS;
                     _guiDisable = true;
-                    DownloadDreams();
+                    DownloadDreams().Forget();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -56,7 +57,7 @@ namespace AliceLaboratory.Editor {
                     _gateway = new Gateway();
                     _state = GUIFlagState.UPDATING_AVATERS_DATA;
                     _guiDisable = true;
-                    UpdateAvaters();
+                    UpdateAvaters().Forget();
                 }
                 EditorGUI.EndDisabledGroup();
             }
@@ -79,7 +80,7 @@ namespace AliceLaboratory.Editor {
             }
         }
 
-        private async void DownloadDreams()
+        private async UniTaskVoid DownloadDreams()
         {
             // --- 変換元パンツテクスチャのリストをDL ---
             var dreamsData = await _gateway.GetDreamsData();
@@ -111,7 +112,7 @@ namespace AliceLaboratory.Editor {
             ClearGUIWaiting();
         }
 
-        private async void UpdateAvaters() 
+        private async UniTaskVoid UpdateAvaters() 
         {
             var data = await _gateway.GetAvatarsData();
             if(data != null) {
