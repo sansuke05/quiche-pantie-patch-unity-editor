@@ -1,7 +1,8 @@
 {
     "name": "AliceLaboratory.Editor",
     "references": [
-        "UniTask"
+        "UniTask",
+        "UniTask.Linq"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

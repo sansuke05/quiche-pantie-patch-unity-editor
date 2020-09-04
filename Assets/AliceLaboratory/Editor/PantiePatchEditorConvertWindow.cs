@@ -24,8 +24,13 @@ namespace AliceLaboratory.Editor {
         AsyncReactiveProperty<int> SelectedAvatarIndex { get; } = new AsyncReactiveProperty<int>(-1);
         AsyncReactiveProperty<bool> ConvertRunning { get; } = new AsyncReactiveProperty<bool>(false);
 
-        ReadOnlyAsyncReactiveProperty<bool> CanStartConvert { get; set; } 
+        ReadOnlyAsyncReactiveProperty<bool> CanStartConvert { get; } 
         
+        public PantiePatchEditorConvertWindow()
+        {
+            CanStartConvert = UniTaskAsyncEnumerable.CombineLatest(ConvertTexture, SelectedAvatarIndex, ConvertRunning,
+               (convertTexture, selectedAvatarIndex, convertRunning) => convertTexture != null && selectedAvatarIndex != -1 && !convertRunning).ToReadOnlyAsyncReactiveProperty(default);
+        }
         //スクロール位置
         private Vector2 _scrollPosition = Vector2.zero;
 
@@ -37,9 +42,7 @@ namespace AliceLaboratory.Editor {
         [MenuItem("Editor/PantiePatch/パンツ変換")]
         private static void Init() {
             
-            var window = GetWindow<PantiePatchEditorConvertWindow>();
-            window.titleContent = new GUIContent("パンツ変換");
-            window.Show();
+            GetWindow<PantiePatchEditorConvertWindow>("パンツ変換").Show();
         }
         
         #region Unity Method
@@ -49,8 +52,7 @@ namespace AliceLaboratory.Editor {
             var file = new FilerOperator();
             _avatarsData = file.readAvatersData();
 
-            CanStartConvert = UniTaskAsyncEnumerable.CombineLatest(ConvertTexture, SelectedAvatarIndex, ConvertRunning,
-                (convertTexture, selectedAvatarIndex, convertRunning) => convertTexture != null && selectedAvatarIndex!=-1 && !convertRunning).ToReadOnlyAsyncReactiveProperty(default);
+           
 #if UNITY_2019_4_OR_NEWER
             CreateGUI();
 #endif
@@ -91,16 +93,13 @@ namespace AliceLaboratory.Editor {
                 GUILayout.Space(20);
                 EditorGUI.BeginDisabledGroup(!CanStartConvert.Value);
                 if(GUILayout.Button("変換")) {
-                    UniTask.Void(async () =>
-                    {
-                        await Convert(ConvertTexture.Value, BaseAvatarTexture.Value, SelectedModelName);
-                    });
+                    Convert(ConvertTexture.Value, BaseAvatarTexture.Value, SelectedModelName);
                 }
                 EditorGUI.EndDisabledGroup();
             }
         }
 #endif
-#endregion
+        #endregion
 
 #if UNITY_2019_4_OR_NEWER
 
@@ -149,12 +148,7 @@ namespace AliceLaboratory.Editor {
             
 
            
-            convertButton.clicked += UniTask.Action(async () =>
-            {
-
-                await Convert(ConvertTexture.Value, BaseAvatarTexture.Value, SelectedModelName);
-
-            });
+            convertButton.clicked += Convert(ConvertTexture.Value, BaseAvatarTexture.Value, SelectedModelName);
 
         
 
@@ -162,25 +156,15 @@ namespace AliceLaboratory.Editor {
 #endif
         string SelectedModelName => _avatarsData.models[SelectedAvatarIndex.Value];
 
+        void Convert(Texture convertTexture, Texture baseAvatarTexture, string modelName) => ConvertImpl(convertTexture, baseAvatarTexture, modelName).Forget();
 
-        private async UniTask Convert(Texture convertTexture,Texture baseAvatarTexture,string modelName) 
+        private async UniTaskVoid ConvertImpl(Texture convertTexture,Texture baseAvatarTexture,string modelName) 
         {
             ConvertRunning.Value = true;
-            var _gateway = new Gateway();
             var fileName = convertTexture.name + ".png";
-
-            UniTask.Void(async () =>
-            {
-                while (ConvertRunning.Value)
-                {
-                    EditorUtility.DisplayProgressBar("Converting", "Your dream come true soon...", _gateway.GetProgress());
-                    await UniTask.Yield();
-                }
-                EditorUtility.ClearProgressBar();
-                
-            });
-
-            var tex = await _gateway.GetConvertedTexture(fileName, modelName, baseAvatarTexture);
+            var(task,request) = Gateway.GetConvertedTexture(fileName, modelName, baseAvatarTexture);
+            Gateway.ShowProgressBarForUnityWebRequest(request, "Converting", "Your dream come true soon...");
+            var tex = await task;
 
             // 重ねるアバターのテクスチャが設定されていればテクスチャを合成する
             if (baseAvatarTexture != null)
