@@ -131,7 +131,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &138591184
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -236,15 +236,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5b0dc8960aeba414bb3b9fb8fe7d9785, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5b0dc8960aeba414bb3b9fb8fe7d9785, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5b0dc8960aeba414bb3b9fb8fe7d9785, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5b0dc8960aeba414bb3b9fb8fe7d9785, type: 3}
       propertyPath: m_RootOrder
@@ -256,7 +256,11 @@ Prefab:
       objectReference: {fileID: 2100000, guid: 5b2e027f041ff47f3b9c513cc3d4d781, type: 2}
     - target: {fileID: 100000, guid: 5b0dc8960aeba414bb3b9fb8fe7d9785, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 5b0dc8960aeba414bb3b9fb8fe7d9785, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5b0dc8960aeba414bb3b9fb8fe7d9785, type: 3}
