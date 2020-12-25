@@ -1,20 +1,12 @@
 {
     "name": "UniTask",
-    "references": [
-    ],
+    "references": [],
+    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "com.unity.modules.assetbundle",
-            "expression": "",
-            "define": "UNITASK_ASSETBUNDLE_SUPPORT"
-        }
-    ],
-    "noEngineReferences": false
+    "defineConstraints": []
 }
