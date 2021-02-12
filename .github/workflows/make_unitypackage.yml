@@ -1,0 +1,21 @@
+name: Unity Export unitypackage
+
+on:
+  push:
+    branches:
+    - develop
+
+jobs:
+  editorTestJob:
+    runs-on: ubuntu-latest
+    container: docker://gableroux/unity3d:${{ matrix.unity-tag }}
+    strategy:
+      matrix:
+        unity-tag: [2018.4.20f1]
+
+    steps:
+    - uses: actions/checkout@master
+    - run: openssl aes-256-cbc -d -in Unity_v2018.x.ulf-cipher -k ${CYPHER_KEY} >> /Unity_v2018.x.ulf
+      env:
+        CYPHER_KEY: ${{ secrets.cypherkey }}
+    - run: /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -manualLicenseFile /Unity_v2018.x.ulf || exit 0
