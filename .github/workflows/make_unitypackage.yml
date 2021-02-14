@@ -5,41 +5,35 @@ on:
     tags:
       - 'v*'
 
-jobs:
-  createUnityPackageJob:
-    runs-on: ubuntu-latest
-    container: docker://gableroux/unity3d:${{ matrix.unity-tag }}
-    strategy:
-      matrix:
-        unity-tag: [2018.4.20f1]
-    env:
-      UNITY_PATH: /opt/Unity/Editor/Unity
-      BATCHMODE_ARGS: -quit -batchmode -nographics -silent-crashes -logFile
-      PACKAGE_NAME: QuichePantiePatchEditor_v${{ github.ref }}.unitypackage
+env:
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
+jobs:
+  build:
+    name: Build UnityPackage
+    runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@master
-    - name: Decode Secret Unity Licence File
-      run: >
-        openssl aes-256-cbc -d -in Unity_v2018.x.ulf-cipher
-        -k ${CYPHER_KEY}
-        >> /Unity_v2018.x.ulf
-      env:
-        CYPHER_KEY: ${{ secrets.cypherkey }}
-    - name: Activate Unity
-      run: >
-        ${UNITY_PATH}
-        ${BATCHMODE_ARGS}
-        -manualLicenseFile /Unity_v2018.x.ulf
-        || exit 0
-    - name: Export UnityPackage
-      run: >
-        ${UNITY_PATH}
-        ${BATCHMODE_ARGS}
-        -exportPackage ${EXPORT_PACKAGES} ${PACKAGE_NAME}
-        -projectPath $GITHUB_WORKSPACE
-      env:
-        EXPORT_PACKAGES: Assets/AliceLaboratory/Editor
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set version
+      id: version
+      run: |
+        VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
+        echo ::set-output name=version::$VERSION
+        echo ::set-output name=filename::QuichePantiePatchEditor_$VERSION.unitypackage
+        echo "Version $VERSION"
+
+    - name: Build project
+      uses: game-ci/unity-builder@v1.5
+      with:
+        unityVersion: 2018.4.20f1
+        buildMethod: UnityPackageExporter.Export
+
+    - name: Add version to Package
+      run: mv QuichePantiePatchEditor.unitypackage ${{ steps.version.outputs.filename }}
+    
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1.0.0
@@ -50,6 +44,7 @@ jobs:
         release_name: Release Quiche Pantie Patch Editor ${{ github.ref }}
         draft: false
         prerelease: false
+
     - name: Upload Release Asset
       id: upload-release-asset
       uses: actions/upload-release-asset@v1.0.1
@@ -57,7 +52,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${PACKAGE_NAME}
-        asset_name: ${PACKAGE_NAME}
+        asset_path: ./${{ steps.version.outputs.filename }}
+        asset_name: ${{ steps.version.outputs.filename }}
         asset_content_type: application/zip
         
