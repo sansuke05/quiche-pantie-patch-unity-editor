@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using UnityEditor;
@@ -56,54 +57,88 @@ namespace AliceLaboratory.Editor {
             DownloadingDreams.Value = true;
 
             // --- 変換元パンツテクスチャのリストをDL ---
-            var getDreamsData = Gateway.GetDreamsData();
-            Gateway.ShowProgressBarForUnityWebRequest(getDreamsData.Request, "Downloading...", "Downloading our dreams");
-            var dreamsData = await getDreamsData.Task;
-            if (dreamsData == null)
+            Dream dreamsData = new Dream();
+            try
             {
+                var getDreamsData = Gateway.GetDreamsData();
+                Gateway.ShowProgressBarForUnityWebRequest(getDreamsData.Request, "Downloading...", "Downloading our dreams");
+                dreamsData = await getDreamsData.Task;
+                if (dreamsData is null)
+                {
+                    throw new UnityWebRequestException(getDreamsData.Request);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.StackTrace);
                 Debug.LogError("Download Error: 変換元パンツ情報のダウンロードに失敗しました");
-
-                return;
+                DownloadingDreams.Value = false;
             }
 
             // --- 変換元テクスチャを一括ダウンロード&保存 ---
-            var existFiles = FilerOperator.getExistsTextures();
-
-            foreach(var imageName in dreamsData.images)
+            try
             {
-                // 既にローカルにテクスチャが存在する場合はスキップ
-                if (existFiles != null && existFiles.Contains(imageName))
-                {
-                    continue;
-                }
-                var getDreamTexture = Gateway.GetDreamTexture(imageName);
-                Gateway.ShowProgressBarForUnityWebRequest(getDreamTexture.Request, "Downloading...", "Downloading our dreams");
-                var tex = await getDreamTexture.Task;
-                
-                // テクスチャデータの保存
-                var creator = new FilerOperator();
-                creator.Create(imageName, "Dreams", tex);
-            }
+                var existFiles = FilerOperator.getExistsTextures();
 
-            DownloadingDreams.Value = false;
+                foreach (var imageName in dreamsData.images)
+                {
+                    // 既にローカルにテクスチャが存在する場合はスキップ
+                    if (existFiles != null && existFiles.Contains(imageName))
+                    {
+                        continue;
+                    }
+
+                    var getDreamTexture = Gateway.GetDreamTexture(imageName);
+                    Gateway.ShowProgressBarForUnityWebRequest(getDreamTexture.Request, "Downloading...",
+                        "Downloading our dreams");
+                    var tex = await getDreamTexture.Task;
+
+                    // テクスチャデータの保存
+                    var creator = new FilerOperator();
+                    creator.Create(imageName, "Dreams", tex);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.StackTrace);
+                Debug.LogError("Download Error: 変換元パンツテクスチャのダウンロードに失敗しました");
+            }
+            finally
+            {
+                DownloadingDreams.Value = false;
+            }
         }
 
         private async UniTaskVoid UpdateAvatars() 
         {
             UpdatingAvatars.Value = true;
-            var getAvatarsData = Gateway.GetAvatarsData();
-            Gateway.ShowProgressBarForUnityWebRequest(getAvatarsData.Request, "Updating...", "Updating avatars data");
-            var data = await getAvatarsData.Task;
-            if(data != null) {
-                var file = new FilerOperator();
-                file.SaveAvatarsData(data);
+            try
+            {
+                var getAvatarsData = Gateway.GetAvatarsData();
+                Gateway.ShowProgressBarForUnityWebRequest(getAvatarsData.Request, "Updating...", "Updating avatars data");
+                var data = await getAvatarsData.Task;
+                if(data != null) {
+                    var file = new FilerOperator();
+                    file.SaveAvatarsData(data);
 
-                Debug.Log("Updating completed!");
-                Debug.Log(string.Join(",",data.display_names));
-                Debug.Log(string.Join(",",data.models));
+                    Debug.Log("Updating completed!");
+                    Debug.Log(string.Join(",",data.display_names));
+                    Debug.Log(string.Join(",",data.models));
+                }
+                else
+                {
+                    throw new UnityWebRequestException(getAvatarsData.Request);
+                }
             }
-            UpdatingAvatars.Value = false;
+            catch (Exception e)
+            {
+                Debug.LogError(e.StackTrace);
+                Debug.LogError("Download Error: アバター情報のダウンロードに失敗しました");
+            }
+            finally
+            {
+                UpdatingAvatars.Value = false;
+            }
         }
-
     }
 }

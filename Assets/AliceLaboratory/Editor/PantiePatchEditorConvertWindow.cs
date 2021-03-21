@@ -161,26 +161,41 @@ namespace AliceLaboratory.Editor {
         private async UniTaskVoid ConvertImpl(Texture convertTexture,Texture baseAvatarTexture,string modelName) 
         {
             ConvertRunning.Value = true;
-            var fileName = convertTexture.name + ".png";
-            var(task,request) = Gateway.GetConvertedTexture(fileName, modelName, baseAvatarTexture);
-            Gateway.ShowProgressBarForUnityWebRequest(request, "Converting", "Your dream come true soon...");
-            var tex = await task;
-
-            // 重ねるアバターのテクスチャが設定されていればテクスチャを合成する
-            if (baseAvatarTexture != null)
+            try
             {
-                // Pathからアバターのテクスチャを取得
-                var baseTexPath = AssetDatabase.GetAssetPath(baseAvatarTexture);
-                var baseTex2D = FilerOperator.GetTexture(baseTexPath);
-                tex = TextureUtils.Overlap(overTex: tex, baseTex: baseTex2D);
-            }
+                var fileName = convertTexture.name + ".png";
+                var (task, request) = Gateway.GetConvertedTexture(fileName, modelName, baseAvatarTexture);
+                Gateway.ShowProgressBarForUnityWebRequest(request, "Converting", "Your dream come true soon...");
+                var tex = await task;
+                if (tex is null)
+                {
+                    throw new UnityWebRequestException(request);
+                }
 
-            // テクスチャデータの保存
-            var dir = "ConvertedDreams/" + modelName;
-            var creator = new FilerOperator();
-            creator.Create(fileName, dir, tex);
-            ConvertRunning.Value = false;
-            Debug.Log("Converting completed!");
+                // 重ねるアバターのテクスチャが設定されていればテクスチャを合成する
+                if (baseAvatarTexture != null)
+                {
+                    // Pathからアバターのテクスチャを取得
+                    var baseTexPath = AssetDatabase.GetAssetPath(baseAvatarTexture);
+                    var baseTex2D = FilerOperator.GetTexture(baseTexPath);
+                    tex = TextureUtils.Overlap(overTex: tex, baseTex: baseTex2D);
+                }
+
+                // テクスチャデータの保存
+                var dir = "ConvertedDreams/" + modelName;
+                var creator = new FilerOperator();
+                creator.Create(fileName, dir, tex);
+                Debug.Log("Converting completed!");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.StackTrace);
+                Debug.LogError("Download Error: パンツの変換に失敗しました");
+            }
+            finally
+            {
+                ConvertRunning.Value = false;
+            }
         }
 
     }
