@@ -57,7 +57,7 @@ namespace AliceLaboratory.Editor {
             DownloadingDreams.Value = true;
 
             // --- 変換元パンツテクスチャのリストをDL ---
-            Dream dreamsData = new Dream();
+            Dream dreamsData;
             try
             {
                 var getDreamsData = Gateway.GetDreamsData();
@@ -73,6 +73,7 @@ namespace AliceLaboratory.Editor {
                 Debug.LogError(e.StackTrace);
                 Debug.LogError("Download Error: 変換元パンツ情報のダウンロードに失敗しました");
                 DownloadingDreams.Value = false;
+                return;
             }
 
             // --- 変換元テクスチャを一括ダウンロード&保存 ---
