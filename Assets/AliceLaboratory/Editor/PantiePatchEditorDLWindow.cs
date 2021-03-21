@@ -68,7 +68,7 @@ namespace AliceLaboratory.Editor {
                     throw new UnityWebRequestException(getDreamsData.Request);
                 }
             }
-            catch (Exception e)
+            catch (UnityWebRequestException e)
             {
                 Debug.LogError(e.StackTrace);
                 Debug.LogError("Download Error: 変換元パンツ情報のダウンロードに失敗しました");
@@ -98,7 +98,7 @@ namespace AliceLaboratory.Editor {
                     creator.Create(imageName, "Dreams", tex);
                 }
             }
-            catch (Exception e)
+            catch (UnityWebRequestException e)
             {
                 Debug.LogError(e.StackTrace);
                 Debug.LogError("Download Error: 変換元パンツテクスチャのダウンロードに失敗しました");
@@ -130,7 +130,7 @@ namespace AliceLaboratory.Editor {
                     throw new UnityWebRequestException(getAvatarsData.Request);
                 }
             }
-            catch (Exception e)
+            catch (UnityWebRequestException e)
             {
                 Debug.LogError(e.StackTrace);
                 Debug.LogError("Download Error: アバター情報のダウンロードに失敗しました");
