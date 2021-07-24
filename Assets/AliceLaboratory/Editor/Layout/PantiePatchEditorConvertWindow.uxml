@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+>
+    <editor:ObjectField label="Select pantie to convert" name="ConvertTextureSelector" />
+    <editor:ObjectField label="Select target avatar texture" binding-path="baseAvatarTexture" name="BaseAvatarTextureSelector" />
+    <engine:Label text="Target avatar" />
+    <engine:IMGUIContainer />
+    <engine:Button text="Convert" name="ConvertButton" />
+</engine:UXML>
