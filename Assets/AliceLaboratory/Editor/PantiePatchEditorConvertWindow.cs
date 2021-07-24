@@ -89,9 +89,12 @@ namespace AliceLaboratory.Editor
 #else
         void CreateGUI()
         {
-            const string layoutFilePath = "Assets/AliceLaboratory/Editor/Layout/PantiePatchEditorConvertWindow.uxml";
+            const string layoutDirPath = "Assets/AliceLaboratory/Editor/Layout";
             var root = rootVisualElement;
-            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(layoutFilePath);
+            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>($"{layoutDirPath}/PantiePatchEditorConvertWindow.uxml");
+            var style = AssetDatabase.LoadAssetAtPath<StyleSheet>(
+                $"{layoutDirPath}/PantiePatchEditorConvertWindow.uss");
+            root.styleSheets.Add(style);
             visualTree.CloneTree(root);
 
             var convertTextureSelector = root.Q<ObjectField>("ConvertTextureSelector");

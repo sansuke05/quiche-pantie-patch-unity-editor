@@ -7,7 +7,7 @@
 >
     <editor:ObjectField label="変換するパンツを選択" name="ConvertTextureSelector" allow-scene-objects="false"/>
     <editor:ObjectField label="重ねるアバターのテクスチャを選択" binding-path="baseAvatarTexture" name="BaseAvatarTextureSelector" allow-scene-objects="false"/>
-    <engine:Label text="変換対象のアバター" />
+    <engine:Label text="変換対象のアバター" class="target_avatar_label" />
     <engine:IMGUIContainer />
-    <engine:Button text="変換" name="ConvertButton" />
+    <engine:Button text="変換" class="convert_button" name="ConvertButton" />
 </engine:UXML>
