@@ -5,9 +5,9 @@
     xmlns:editor="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
 >
-    <editor:ObjectField label="Select pantie to convert" name="ConvertTextureSelector" />
-    <editor:ObjectField label="Select target avatar texture" binding-path="baseAvatarTexture" name="BaseAvatarTextureSelector" />
-    <engine:Label text="Target avatar" />
+    <editor:ObjectField label="変換するパンツを選択" name="ConvertTextureSelector" allow-scene-objects="false"/>
+    <editor:ObjectField label="重ねるアバターのテクスチャを選択" binding-path="baseAvatarTexture" name="BaseAvatarTextureSelector" allow-scene-objects="false"/>
+    <engine:Label text="変換対象のアバター" />
     <engine:IMGUIContainer />
-    <engine:Button text="Convert" name="ConvertButton" />
+    <engine:Button text="変換" name="ConvertButton" />
 </engine:UXML>
