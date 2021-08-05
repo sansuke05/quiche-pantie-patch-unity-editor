@@ -1,0 +1,7 @@
+﻿.convert_button {
+    margin: 10px;
+}
+
+.target_avatar_label {
+    margin-top: 10px;
+}
